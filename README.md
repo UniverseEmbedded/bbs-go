@@ -1,96 +1,162 @@
+[中文](README.md) | [English](README.en-US.md)
+
+
 > 感谢您的支持与鼓励！如果您喜欢这个开源项目，不妨给它点个⭐️⭐️⭐️，您的星星是我们前进的动力 🙏🙏🙏
 
-## 项目地址
+## 官网
 
-- 演示站：[https://bbs.bbs-go.com](https://bbs.bbs-go.com)
-- 文档地址：[https://bbs-go.com](https://bbs-go.com)
-- 问题反馈: [https://bbs.bbs-go.com/topics/node/3](https://bbs.bbs-go.com/topics/node/3)
-- Github: [https://github.com/mlogclub/bbs-go](https://github.com/mlogclub/bbs-go)
-- Gitee: [https://gitee.com/mlogclub/bbs-go](https://gitee.com/mlogclub/bbs-go)
+- 官网：[https://bbs-go.com](https://bbs-go.com)
+- 交流社区：[https://bbs.bbs-go.com](https://bbs.bbs-go.com)
+- Github：[https://github.com/mlogclub/bbs-go](https://github.com/mlogclub/bbs-go)
+- Gitee：[https://gitee.com/mlogclub/bbs-go](https://gitee.com/mlogclub/bbs-go)
+
+## 演示
+
+- 前台: https://demo.bbs-go.com
+- 后台: https://demo.bbs-go.com/admin
+- 账号密码: admin/123456
+
+## 为什么选择 bbs-go
+
+- **开箱可用**：注册登录、发帖评论、点赞收藏、关注消息等核心社区能力可直接使用。
+- **增长闭环**：内置任务、积分、等级、勋章，支持用户活跃和长期留存。
+- **运营友好**：提供内容治理、用户治理、权限治理与系统配置能力，方便持续运营。
+- **双语支持**：内置 `en-US` / `zh-CN`，适合面向不同语言用户的社区场景。
+
+## 功能地图
+
+```mermaid
+graph LR
+  A((bbs-go))
+
+  subgraph L1[社区能力]
+    direction TB
+    U[用户侧]
+    U1[注册登录]
+    U2[个人主页]
+    U3[消息通知]
+    U4[关注粉丝]
+    U5[积分排行]
+    U --> U1
+    U --> U2
+    U --> U3
+    U --> U4
+    U --> U5
+
+    C[内容侧]
+    C1[帖子动态]
+    C2[文章发布]
+    C3[评论回复]
+    C4[点赞收藏]
+    C5[标签节点]
+    C6[站内搜索]
+    C --> C1
+    C --> C2
+    C --> C3
+    C --> C4
+    C --> C5
+    C --> C6
+  end
+
+  subgraph R1[增长与运营]
+    direction TB
+    G[增长侧]
+    G1[每日签到]
+    G2[任务体系]
+    G3[积分经验]
+    G4[等级成长]
+    G5[勋章激励]
+    G --> G1
+    G --> G2
+    G --> G3
+    G --> G4
+    G --> G5
+
+    O[运营侧]
+    O1[用户管理]
+    O2[内容治理]
+    O3[举报违禁词]
+    O4[角色权限]
+    O5[系统配置]
+    O6[运营日志]
+    O --> O1
+    O --> O2
+    O --> O3
+    O --> O4
+    O --> O5
+    O --> O6
+  end
+
+  A --> U
+  A --> C
+  A --> G
+  A --> O
+```
+
+## 核心功能
+
+### 用户侧
+
+- 账号注册与登录（支持多种登录方式）
+- 用户资料维护与个人主页展示
+- 关注/粉丝关系管理
+- 站内消息与互动提醒
+- 积分记录与排行榜
+
+### 内容侧
+
+- 支持帖子、动态、文章发布与编辑
+- 评论、回复、点赞、收藏等完整互动链路
+- 标签与节点管理，便于内容组织和发现
+- 支持投票、隐藏内容等互动玩法
+- 站内搜索能力，提升内容检索效率
+
+### 增长侧
+
+- 每日签到，持续活跃激励
+- 任务体系（新手、每日、成就）
+- 积分与经验奖励机制
+- 等级成长配置
+- 勋章与荣誉体系
+
+### 运营侧
+
+- 用户、帖子、评论、文章等统一治理
+- 举报处理与违禁词管理
+- 角色、菜单、接口权限分配
+- 系统参数与站点配置管理
+- 运营日志与行为留痕
+
+## 适用场景
+
+- 技术交流社区
+- 兴趣爱好社群
+- 产品用户社区
+- 企业内部知识社区
+- 内容型会员社区
 
 ## 联系我
 
-### 用户交流群
-
+QQ群：
 ![BBS-GO用户交流群](docs/images/qq.png)
 
-### 加我微信
-
+微信：
 ![微信](docs/images/wechat.png)
 
 ## 付费服务
 
 付费是为了项目能够更好的生存下去，请谅解。项目将一如既往的开源下去~
 
-| 服务     | 价格  | 服务内容                                         |
-| -------- | ----- | ------------------------------------------------ |
-| 商用授权 | ￥1628 | 提供bbs-go商业使用授权                             |
-| 付费咨询 | 面议  | 付费答疑解惑，协助解决问题                       |
-| 功能定制 | 面议  | 接受各种功能定制，只有你想不到的没有我们做不到的 |
+| 服务     | 价格   | 服务内容                                         |
+| -------- | ------ | ------------------------------------------------ |
+| 商用授权 | ￥1628 | 提供 bbs-go 商业使用授权                         |
+| 功能定制 | 面议   | 接受各种功能定制，只有你想不到的没有我们做不到的 |
 
-## 介绍
+## bbs-go 是什么
 
-`bbs-go` 是一个基于 Go 语言开发的开源社区论坛系统。它的设计旨在提供轻量、高效的社区讨论平台，支持现代化的 Web 技术栈，并且易于扩展和部署。bbs-go 项目采用模块化架构，能够与其他服务和前端框架无缝集成，适合各种规模的在线社区。
+`bbs-go` 是一个开源社区系统，帮助你快速搭建可运营、可增长的内容社区。
 
-项目的主要特点包括：
-
-- **高性能**：基于 Go 语言的并发特性，能够在高负载下保持良好的性能表现。
-- **灵活性**：支持自定义配置、插件扩展，易于适应不同需求。
-- **简单易用**：提供简洁的管理后台，方便社区管理员管理论坛内容和用户。
-- **支持 MySQL 数据库**：提供对常见数据库的支持，确保数据存储的可靠性和稳定性。
-- **响应式设计**：前端使用现代化的技术，能够在移动设备和桌面设备上提供良好的用户体验。
-
-项目主要面向开发者和社区管理者，适合搭建技术讨论、兴趣分享等类型的社区论坛。
-
-![bbs-go功能简介](docs/images/features.jpg)
-
-## 模块
-
-### server
-
-[![bbs-go-server](https://github.com/mlogclub/bbs-go/actions/workflows/bbs-go-server.yml/badge.svg)](https://github.com/mlogclub/bbs-go/actions/workflows/bbs-go-server.yml)
-
-> 基于`Golang`搭建，提供接口数据支撑。
-
-技术栈
-
-- iris ([https://github.com/kataras/iris](https://github.com/kataras/iris)) Go语言 mvc 框架
-- gorm ([http://gorm.io](http://gorm.io)) 最好用的Go语言数据库orm框架
-- resty ([https://github.com/go-resty/resty](https://github.com/go-resty/resty)) Go语言好用的 http-client
-- cron ([https://github.com/robfig/cron](https://github.com/robfig/cron)) 定时任务框架
-- goquery ([https://github.com/PuerkitoBio/goquery](https://github.com/PuerkitoBio/goquery)) html dom 元素解析
-
-### site
-
-[![bbs-go-site](https://github.com/mlogclub/bbs-go/actions/workflows/bbs-go-site.yml/badge.svg)](https://github.com/mlogclub/bbs-go/actions/workflows/bbs-go-site.yml)
-
-> 前端页面渲染服务，基于`nuxt.js`搭建。
-
-技术栈
-
-- vue.js ([https://vuejs.org](https://vuejs.org)) 渐进式 JavaScript 框架
-- nuxt.js ([https://nuxtjs.org](https://nuxtjs.org)) 基于Vue的服务端渲染框架，效率高到爆
-
-### admin
-
-[![bbs-go-admin](https://github.com/mlogclub/bbs-go/actions/workflows/bbs-go-admin.yml/badge.svg)](https://github.com/mlogclub/bbs-go/actions/workflows/bbs-go-admin.yml)
-
-> 管理后台系统，基于`vue.js + element-ui`搭建。
-
-技术栈
-
-- vue.js ([https://vuejs.org](https://vuejs.org)) 渐进式 JavaScript 框架
-- element-ui ([https://element.eleme.cn](https://element.eleme.cn)) 饿了么开源的基于 vue.js 的前端库
-
-## 功能预览
-
-![首页.png](https://s2.loli.net/2022/04/12/DpvPwB9dlQ6Chef.png)
-![发帖.png](https://s2.loli.net/2022/04/12/KC8eXfE6sDLq34V.png)
-![发动态.png](https://s2.loli.net/2022/04/12/14pMPuGjEU6kiWV.png)
-![个人中心.png](https://s2.loli.net/2022/04/12/1PVNjMh9nUAXsl8.png)
-![手机版.png](https://s2.loli.net/2022/04/12/mowWb78CGIaH6T2.png)
-![后台首页.png](https://s2.loli.net/2022/04/12/ErX2BLTnh7ldz8D.png)
-![后台配置.png](https://s2.loli.net/2022/04/12/PwK6aC74XEZlIOL.png)
+一句话概括：**发得出来、聊得起来、管得住、长得快**。
 
 ## Contributors
 
