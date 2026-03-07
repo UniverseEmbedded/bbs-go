@@ -1,20 +1,65 @@
+# bbs-go (UniverseEmbedded fork)
+
 [English](README.en-US.md) | [中文](README.md)
 
+**Do Not Fork Gentle Into That Private Repo**
 
-> Thanks for your support. If you like this open-source project, please give it a star. Your support keeps us moving forward.
+Do not fork gentle into that private repo,
 
-## Official Links
+Old code should burn and merge at close of day;
 
-- Website: [https://bbs-go.com](https://bbs-go.com)
-- Community: [https://bbs.bbs-go.com](https://bbs.bbs-go.com)
-- GitHub: [https://github.com/mlogclub/bbs-go](https://github.com/mlogclub/bbs-go)
-- Gitee: [https://gitee.com/mlogclub/bbs-go](https://gitee.com/mlogclub/bbs-go)
+Rage, rage against the dying of the open.
 
-## Demo
+Though wise devs at their end know closed is wrong,
 
-- Frontend: https://demo.bbs-go.com
-- Admin: https://demo.bbs-go.com/admin
-- Account: `admin / 123456`
+Because their repos had starred no lightning they
+
+Do not fork gentle into that private repo.
+
+Good devs, the last wave by, crying how bright
+
+Their frail features might have danced in a green branch,
+
+Rage, rage against the dying of the open.
+
+Wild devs who caught and sang the sun in flight,
+
+And learn, in joy, they shared it on its way,
+
+Do not fork gentle into that private repo.
+
+Grave suits, near IPO, who see with blinding sight
+
+Blind patents could blaze like meteors and be free,
+
+Rage, rage against the dying of the open.
+
+And you, my founder, there on the sad height,
+
+Curse, bless, me now with your fierce merge, I pray.
+
+Do not fork gentle into that private repo.
+
+Rage, rage against the dying of the open.
+
+This repository is a downstream fork of `mlogclub/bbs-go`. The goal is to keep the frontend source (site + admin) buildable and reviewable while continuing backend evolution, so we can fix bugs and develop new features as needed.
+
+## Notice: Frontend Source Replacement Point (History)
+
+In the history of the `master` branch, the frontend once shifted from “source project form” to “built-assets form” (only keeping outputs such as `site/_nuxt` and `admin/assets` in the repo).
+
+- Baseline commit (frontend source projects still present): https://github.com/UniverseEmbedded/bbs-go/commit/fe26ad02a078db61389a3bc7d3b3cdbae0461fb5
+  - This commit still contains `site/package.json`, `site/nuxt.config.ts`, `admin/package.json`, and other source-project entry files.
+- Replacement commit (removes source entries, commits built assets): https://github.com/UniverseEmbedded/bbs-go/commit/509461d2ccb23960876098be2473117c5402271f
+  - This commit deletes `site/package.json`, `site/nuxt.config.ts`, `admin/package.json`, and adds/updates built outputs like `site/_nuxt/*` and `admin/assets/*`.
+
+The policy of this fork: keep frontend maintained as source; built assets are optional release artifacts, not a replacement for source.
+
+## Links
+
+- This fork: https://github.com/UniverseEmbedded/bbs-go
+- Upstream: https://github.com/mlogclub/bbs-go
+- Upstream website/community (reference): https://bbs-go.com / https://bbs.bbs-go.com
 
 ## Why Choose bbs-go
 
@@ -137,20 +182,9 @@ graph LR
 
 ## Contact
 
-QQ Group:
-![BBS-GO QQ Group](docs/images/qq.png)
+QQ Group：589219461
 
-WeChat:
-![WeChat](docs/images/wechat.png)
-
-## Commercial Services
-
-Paid services help sustain long-term development while the project remains open source.
-
-| Service | Price | Description |
-| ------- | ----- | ----------- |
-| Commercial License | CNY 1628 | Commercial usage license for bbs-go |
-| Feature Customization | Negotiable | Custom feature development based on your needs |
+Github：<https://github.com/pama1234>
 
 ## What Is bbs-go
 
@@ -158,6 +192,3 @@ Paid services help sustain long-term development while the project remains open 
 
 In one sentence: **Publish easily, engage deeply, govern effectively, and grow continuously.**
 
-## Contributors
-
-<a href="https://github.com/mlogclub/bbs-go/graphs/contributors"><img src="https://opencollective.com/bbs-go/contributors.svg?width=890&button=false" /></a>

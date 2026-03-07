@@ -1,20 +1,52 @@
+# bbs-go（UniverseEmbedded fork）
+
 [中文](README.md) | [English](README.en-US.md)
 
+**不要温和地Fork到那个私有存储库**
 
-> 感谢您的支持与鼓励！如果您喜欢这个开源项目，不妨给它点个⭐️⭐️⭐️，您的星星是我们前进的动力 🙏🙏🙏
+不要温和地Fork到那个私有存储库，
+旧代码应当在日暮时燃烧合并；
+怒斥，怒斥开源的消逝。
 
-## 官网
+虽然智者临终时懂得闭源有误，
+因为他们的仓库从未被打上星标，
+不要温和地Fork那个私仓。
 
-- 官网：[https://bbs-go.com](https://bbs-go.com)
-- 交流社区：[https://bbs.bbs-go.com](https://bbs.bbs-go.com)
-- Github：[https://github.com/mlogclub/bbs-go](https://github.com/mlogclub/bbs-go)
-- Gitee：[https://gitee.com/mlogclub/bbs-go](https://gitee.com/mlogclub/bbs-go)
+善良的开发者，最后一浪过去，高呼多么明亮
+他们微小的功能本可以在主分支里起舞，
+怒斥，怒斥开源的消逝。
 
-## 演示
+狂野的人抓取并歌颂飞逝的提交，
+并且及时领悟，他们在路上分享了它，
+不要温和地Fork那个私仓。
 
-- 前台: https://demo.bbs-go.com
-- 后台: https://demo.bbs-go.com/admin
-- 账号密码: admin/123456
+严肃的公司，临近上市，用盲眼看见
+盲目的专利可以像流星一样闪耀而自由，
+怒斥，怒斥开源的消逝。
+
+而你，我的创始人，在那悲伤的估值之巅，
+现在用你激烈的合并请求诅咒我，祝福我吧，我祈求。
+不要温和地Fork那个私仓。
+怒斥，怒斥开源的消逝。
+
+本仓库是 `mlogclub/bbs-go` 的下游 fork，用于在继续演进后端的同时，维护可构建、可审阅的前端源码（site + admin），以便持续修 bug 与按需开发新功能。
+
+## 重要说明：前端源码替换点（历史提交）
+
+在 `master` 分支的历史中，前端曾在一次大版本提交中从“源码工程形态”被替换为“构建产物形态”（仓库中仅保留 `site/_nuxt`、`admin/assets` 等打包结果）。
+
+- 基准提交（仍包含前端源码工程）：https://github.com/UniverseEmbedded/bbs-go/commit/fe26ad02a078db61389a3bc7d3b3cdbae0461fb5
+  - 该提交仍包含 `site/package.json`、`site/nuxt.config.ts`、`admin/package.json` 等源码工程入口文件。
+- 替换提交（删除源码工程入口，提交打包产物）：https://github.com/UniverseEmbedded/bbs-go/commit/509461d2ccb23960876098be2473117c5402271f
+  - 该提交删除 `site/package.json`、`site/nuxt.config.ts`、`admin/package.json`，并新增/更新 `site/_nuxt/*`、`admin/assets/*` 等构建产物。
+
+本仓库的策略是：前端以源码形态持续维护，构建产物仅作为可选发布物，不作为“替换源码”的唯一形态。
+
+## 链接
+
+- 当前仓库（本 fork）：https://github.com/UniverseEmbedded/bbs-go
+- 上游仓库（原始来源）：https://github.com/mlogclub/bbs-go
+- 上游官网与社区（参考）：https://bbs-go.com / https://bbs.bbs-go.com
 
 ## 为什么选择 bbs-go
 
@@ -137,27 +169,12 @@ graph LR
 
 ## 联系我
 
-QQ群：
-![BBS-GO用户交流群](docs/images/qq.png)
+QQ群：589219461
 
-微信：
-![微信](docs/images/wechat.png)
-
-## 付费服务
-
-付费是为了项目能够更好的生存下去，请谅解。项目将一如既往的开源下去~
-
-| 服务     | 价格   | 服务内容                                         |
-| -------- | ------ | ------------------------------------------------ |
-| 商用授权 | ￥1628 | 提供 bbs-go 商业使用授权                         |
-| 功能定制 | 面议   | 接受各种功能定制，只有你想不到的没有我们做不到的 |
+Github：<https://github.com/pama1234>
 
 ## bbs-go 是什么
 
 `bbs-go` 是一个开源社区系统，帮助你快速搭建可运营、可增长的内容社区。
 
 一句话概括：**发得出来、聊得起来、管得住、长得快**。
-
-## Contributors
-
-<a href="https://github.com/mlogclub/bbs-go/graphs/contributors"><img src="https://opencollective.com/bbs-go/contributors.svg?width=890&button=false" /></a>
