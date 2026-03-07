@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Votes</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">概览</div>
+          <a href="./dashboard.html">Dashboard</a>
+          <div class="nav-section">Growth</div>
+          <a href="./tasks.html">Tasks</a>
+          <a href="./badges.html">Badges</a>
+          <a href="./levels.html">Levels</a>
+          <div class="nav-section">Vote</div>
+          <a class="active" href="./votes.html">Votes</a>
+          <a href="./vote-options.html">Vote Options</a>
+          <a href="./vote-records.html">Vote Records</a>
+          <div class="nav-section">More</div>
+          <a href="./tags.html">Tags</a>
+          <a href="./comments.html">Comments</a>
+          <a href="./messages.html">Messages</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Vote</span>
+            <span>›</span>
+            <b>Votes</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Votes</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Votes</h1>
+              <button class="btn primary" type="button" onclick="openModal('voteModal')">+ 新增</button>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>ID</label>
+                  <input class="input" placeholder="id" value="" />
+                </div>
+                <div class="field">
+                  <label>状态</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>正常</option>
+                    <option>已关闭</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>是否多选</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>单选</option>
+                    <option>多选</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:80px">ID</th>
+                      <th>标题</th>
+                      <th style="width:90px">多选</th>
+                      <th style="width:170px">截止时间</th>
+                      <th style="width:90px">状态</th>
+                      <th style="width:170px">更新时间</th>
+                      <th style="width:170px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>12</td>
+                      <td>你希望增加哪类新功能？</td>
+                      <td>单选</td>
+                      <td>2026-03-31 23:59:59</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-06 09:21:11</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('voteModal')">编辑</button>
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="location.href='./vote-options.html'">选项</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>9</td>
+                      <td>最喜欢的徽章样式是？</td>
+                      <td>多选</td>
+                      <td>2026-03-10 20:00:00</td>
+                      <td><span class="tag off">已关闭</span></td>
+                      <td>2026-03-01 18:03:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('voteModal')">编辑</button>
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="location.href='./vote-options.html'">选项</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="footer">
+                <div>共 2 条</div>
+                <div class="pager">
+                  <span class="pagebox">1</span>
+                  <span style="margin-left:10px">20 条/页</span>
+                </div>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/vote/list</code>
+                <code>POST /api/admin/vote/create</code>
+                <code>POST /api/admin/vote/update</code>
+                <code>POST /api/admin/vote/delete</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="voteModal" role="dialog" aria-modal="true" aria-label="Vote Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>新增 / 编辑</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('voteModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field wide">
+              <label>标题 *</label>
+              <input class="input" value="你希望增加哪类新功能？" />
+            </div>
+            <div class="field wide">
+              <label>描述</label>
+              <input class="input" value="用于产品迭代方向参考（示例）" />
+            </div>
+            <div class="field">
+              <label>是否多选</label>
+              <select class="select">
+                <option selected>单选</option>
+                <option>多选</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>截止时间</label>
+              <input class="input" type="datetime-local" value="2026-03-31T23:59" />
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="select">
+                <option selected>正常</option>
+                <option>已关闭</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>排序</label>
+              <input class="input" type="number" value="0" />
+            </div>
+            <div class="field wide">
+              <div class="opts">
+                <div class="opts-hd">
+                  <b>选项（原型内联编辑，实际也可用 Vote Options 页面管理）</b>
+                  <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="addOption()">+ 添加</button>
+                </div>
+                <div id="optList">
+                  <div class="optrow">
+                    <input class="mini" value="任务系统" />
+                    <input class="mini" type="number" value="0" />
+                    <button class="btn danger" type="button" style="height:30px;padding:0 10px" onclick="removeOption(this)">删除</button>
+                  </div>
+                  <div class="optrow">
+                    <input class="mini" value="成就徽章" />
+                    <input class="mini" type="number" value="0" />
+                    <button class="btn danger" type="button" style="height:30px;padding:0 10px" onclick="removeOption(this)">删除</button>
+                  </div>
+                </div>
+                <div style="color:var(--muted);font-size:12px;margin-top:6px">每项包含：标题、排序（示例）。VoteOption 实体字段以后台模型为准。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('voteModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('voteModal')">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      function removeOption(btn){var row=btn.closest(".optrow");if(row)row.remove()}
+      function addOption(){
+        var list=document.getElementById("optList");
+        var div=document.createElement("div");
+        div.className="optrow";
+        div.innerHTML=[
+          '<input class="mini" value="新选项" />',
+          '<input class="mini" type="number" value="0" />',
+          '<button class="btn danger" type="button" style="height:30px;padding:0 10px" onclick="removeOption(this)">删除</button>'
+        ].join("");
+        list.appendChild(div)
+      }
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){var el=document.getElementById("voteModal");if(el&&el.style.display==="flex")el.style.display="none"}})
+      document.getElementById("voteModal").addEventListener("click",function(e){if(e.target===this)closeModal("voteModal")})
+    </script>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Operate Logs</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">Logs</div>
+          <a class="active" href="./operate-logs.html">Operate Logs</a>
+          <a href="./user-score-logs.html">User Score Logs</a>
+          <a href="./email-logs.html">Email Logs</a>
+          <div class="nav-section">Interaction</div>
+          <a href="./messages.html">Messages</a>
+          <a href="./check-ins.html">Check-ins</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Logs</span>
+            <span>›</span>
+            <b>Operate Logs</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Operate Logs</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Operate Logs</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>user_id</label>
+                  <input class="input" placeholder="user_id" value="1" />
+                </div>
+                <div class="field">
+                  <label>op_type</label>
+                  <input class="input" placeholder="op_type" value="update" />
+                </div>
+                <div class="field">
+                  <label>data_type</label>
+                  <input class="input" placeholder="data_type" value="topic" />
+                </div>
+                <div class="field">
+                  <label>data_id</label>
+                  <input class="input" placeholder="data_id" value="4" />
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:110px">user_id</th>
+                      <th style="width:120px">op_type</th>
+                      <th style="width:120px">data_type</th>
+                      <th style="width:110px">data_id</th>
+                      <th>content</th>
+                      <th style="width:170px">create_time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>9001</td>
+                      <td>1</td>
+                      <td><span class="tag ok">update</span></td>
+                      <td>topic</td>
+                      <td>4</td>
+                      <td>管理员更新话题：recommend=true（示例）</td>
+                      <td>2026-03-05 16:33:12</td>
+                    </tr>
+                    <tr>
+                      <td>9002</td>
+                      <td>1</td>
+                      <td><span class="tag ok">delete</span></td>
+                      <td>comment</td>
+                      <td>8802</td>
+                      <td>管理员删除评论（示例）</td>
+                      <td>2026-03-06 09:33:02</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/operate-log/list</code>
+                <code>GET /api/admin/operate-log/{id}</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

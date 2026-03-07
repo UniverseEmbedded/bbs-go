@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Dashboard</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">概览</div>
+          <a class="active" href="./dashboard.html">Dashboard</a>
+          <div class="nav-section">内容</div>
+          <a href="./users.html">User</a>
+          <a href="./topics.html">Topic</a>
+          <a href="./articles.html">Article</a>
+          <div class="nav-section">Growth</div>
+          <a href="./tasks.html">Tasks</a>
+          <a href="./badges.html">Badges</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs"><b>Dashboard</b></div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Dashboard</span>
+          </div>
+          <div class="grid">
+            <section class="card">
+              <h2>系统信息</h2>
+              <div class="kv">
+                <span>版本</span><b>vX.Y.Z</b>
+                <span>运行时间</span><b>12h 34m</b>
+                <span>Go</span><b>1.xx</b>
+                <span>数据库</span><b>MySQL</b>
+              </div>
+            </section>
+            <section class="card">
+              <h2>统计</h2>
+              <div class="kv">
+                <span>用户</span><b>123</b>
+                <span>话题</span><b>456</b>
+                <span>评论</span><b>789</b>
+                <span>文章</span><b>12</b>
+              </div>
+            </section>
+            <section class="card">
+              <h2>告警</h2>
+              <div class="kv">
+                <span>邮件发送失败</span><b>2</b>
+                <span>待处理举报</span><b>1</b>
+                <span>禁言用户</span><b>0</b>
+                <span>队列堆积</span><b>0</b>
+              </div>
+            </section>
+          </div>
+          <div class="api">
+            API 对照：<code>GET /api/admin/common/system_info</code>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

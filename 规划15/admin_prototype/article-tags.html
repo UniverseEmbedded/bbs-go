@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Article Tags</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">More</div>
+          <a href="./tags.html">Tags</a>
+          <a href="./comments.html">Comments</a>
+          <a href="./favorites.html">Favorites</a>
+          <a class="active" href="./article-tags.html">Article Tags</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>More</span>
+            <span>›</span>
+            <b>Article Tags</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Article Tags</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Article Tags</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>文章ID（原型）</label>
+                  <input class="input" value="9" />
+                </div>
+                <div class="field">
+                  <label>标签ID（原型）</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <label>关键词（原型）</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:110px">articleId</th>
+                      <th style="width:110px">tagId</th>
+                      <th style="width:220px">tagName（原型）</th>
+                      <th style="width:170px">create_time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>9101</td>
+                      <td>9</td>
+                      <td>1</td>
+                      <td>Default</td>
+                      <td>2026-03-07 10:12:01</td>
+                    </tr>
+                    <tr>
+                      <td>9102</td>
+                      <td>9</td>
+                      <td>2</td>
+                      <td>Announcement</td>
+                      <td>2026-03-07 10:12:01</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/article-tag/list</code>
+                <code>POST /api/admin/article-tag/create</code>
+                <code>POST /api/admin/article-tag/update</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

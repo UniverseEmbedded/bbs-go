@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Task Events</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">Ops</div>
+          <a href="./migrations.html">Migrations</a>
+          <a class="active" href="./user-task-events.html">Task Events</a>
+          <div class="nav-section">Growth</div>
+          <a href="./tasks.html">Tasks</a>
+          <a href="./task-logs.html">Task Logs</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Ops</span>
+            <span>›</span>
+            <b>Task Events</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Task Events</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Task Events</h1>
+              <button class="btn primary" type="button" onclick="openModal('evtModal')">+ 新增</button>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>ID</label>
+                  <input class="input" placeholder="id" value="" />
+                </div>
+                <div class="field">
+                  <label>事件类型（原型）</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>checkin</option>
+                    <option>create_topic</option>
+                    <option>create_comment</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>状态（原型）</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>正常</option>
+                    <option>禁用</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:160px">eventType</th>
+                      <th>说明</th>
+                      <th style="width:110px">状态</th>
+                      <th style="width:170px">create_time</th>
+                      <th style="width:170px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>checkin</td>
+                      <td>用户签到事件（示例）</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-01 18:03:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="openModal('evtModal')">编辑</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>create_topic</td>
+                      <td>发布话题事件（示例）</td>
+                      <td><span class="tag off">禁用</span></td>
+                      <td>2026-03-06 09:33:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="openModal('evtModal')">编辑</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/user-task-event/list</code>
+                <code>POST /api/admin/user-task-event/create</code>
+                <code>POST /api/admin/user-task-event/update</code>
+                <code>POST /api/admin/user-task-event/delete</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="evtModal" role="dialog" aria-modal="true" aria-label="Task Event Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>新增 / 编辑</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('evtModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field wide">
+              <label>eventType *</label>
+              <input class="input" value="checkin" />
+            </div>
+            <div class="field wide">
+              <label>说明</label>
+              <input class="input" value="用户签到事件（示例）" />
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="select">
+                <option selected>正常</option>
+                <option>禁用</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>排序（原型）</label>
+              <input class="input" type="number" value="0" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('evtModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('evtModal')">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){var el=document.getElementById("evtModal");if(el&&el.style.display==="flex")el.style.display="none"}})
+      document.getElementById("evtModal").addEventListener("click",function(e){if(e.target===this)closeModal("evtModal")})
+    </script>
+  </body>
+</html>

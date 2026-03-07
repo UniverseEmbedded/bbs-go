@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Comments</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">More</div>
+          <a href="./tags.html">Tags</a>
+          <a class="active" href="./comments.html">Comments</a>
+          <a href="./favorites.html">Favorites</a>
+          <a href="./article-tags.html">Article Tags</a>
+          <div class="nav-section">Interaction</div>
+          <a href="./messages.html">Messages</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>More</span>
+            <span>›</span>
+            <b>Comments</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Comments</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Comments</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>ID</label>
+                  <input class="input" placeholder="id" value="" />
+                </div>
+                <div class="field">
+                  <label>用户ID</label>
+                  <input class="input" placeholder="userId" value="1" />
+                </div>
+                <div class="field">
+                  <label>实体类型</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>topic</option>
+                    <option>article</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>实体ID</label>
+                  <input class="input" placeholder="entityId" value="" />
+                </div>
+                <div class="field">
+                  <label>状态</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>正常</option>
+                    <option>已删除</option>
+                    <option>待审核</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:220px">用户</th>
+                      <th style="width:160px">所属</th>
+                      <th>内容预览</th>
+                      <th style="width:110px">内容类型</th>
+                      <th style="width:110px">状态</th>
+                      <th style="width:170px">创建时间</th>
+                      <th style="width:140px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>8801</td>
+                      <td>
+                        <div style="display:flex;align-items:center;gap:10px">
+                          <span class="avatar">A</span>
+                          <div>
+                            <div>admin <span class="tag ok">userId=1</span></div>
+                            <div class="meta"><span>IP: 127.0.0.1</span><span>设备: Web</span></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div><b>topic</b> #4</div>
+                        <div class="meta">Welcome to BBS-GO!</div>
+                      </td>
+                      <td>
+                        <div class="preview"><b>Markdown</b> 示例：支持 <i>加粗</i>、链接等，后端可渲染为 HTML 返回（原型仅展示）。</div>
+                        <div class="imgs">
+                          <div class="img"></div>
+                          <div class="img"></div>
+                        </div>
+                        <div class="meta"><span>images: 2</span><span>entityType+entityId 可定位</span></div>
+                      </td>
+                      <td>markdown</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-05 16:33:12</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>8802</td>
+                      <td>
+                        <div style="display:flex;align-items:center;gap:10px">
+                          <span class="avatar">U</span>
+                          <div>
+                            <div>user2 <span class="tag">userId=2</span></div>
+                            <div class="meta"><span>IP: 10.0.0.2</span></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div><b>article</b> #9</div>
+                        <div class="meta">发布公告（示例）</div>
+                      </td>
+                      <td>
+                        <div class="preview">纯文本评论示例。后端若 contentType 非 markdown 则直接返回 content。</div>
+                        <div class="meta"><span>images: 0</span></div>
+                      </td>
+                      <td>text</td>
+                      <td><span class="tag off">待审核</span></td>
+                      <td>2026-03-06 09:33:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/comment/list</code>
+                <code>POST /api/admin/comment/delete/{id}</code>
+                <code>GET /api/admin/comment/{id}</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Messages</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">Interaction</div>
+          <a class="active" href="./messages.html">Messages</a>
+          <a href="./check-ins.html">Check-ins</a>
+          <a href="./email-codes.html">Email Codes</a>
+          <a href="./sms-codes.html">SMS Codes</a>
+          <div class="nav-section">More</div>
+          <a href="./tags.html">Tags</a>
+          <a href="./comments.html">Comments</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Interaction</span>
+            <span>›</span>
+            <b>Messages</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Messages</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Messages</h1>
+              <button class="btn primary" type="button" onclick="openModal('msgModal')">+ 发送系统消息</button>
+            </div>
+            <div class="panel-bd">
+              <div class="banner">
+                <b>注意</b>
+                <span>后端存在 admin/message_controller，但当前路由可能未注册。原型先定义页面结构与字段。</span>
+              </div>
+              <div class="filters">
+                <div class="field">
+                  <label>FromId</label>
+                  <input class="input" placeholder="fromId" value="0" />
+                </div>
+                <div class="field">
+                  <label>ToId</label>
+                  <input class="input" placeholder="toId (0=全站广播)" value="" />
+                </div>
+                <div class="field">
+                  <label>类型</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>system</option>
+                    <option>user</option>
+                    <option>notice</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>状态</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>正常</option>
+                    <option>已撤回</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:90px">From</th>
+                      <th style="width:90px">To</th>
+                      <th style="width:110px">类型</th>
+                      <th>内容</th>
+                      <th style="width:110px">状态</th>
+                      <th style="width:170px">创建时间</th>
+                      <th style="width:140px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>5001</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>system</td>
+                      <td>欢迎加入 BBS-GO！请遵守社区规范。（示例）</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-06 09:33:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="openModal('msgModal')">编辑</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">撤回</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>5002</td>
+                      <td>0</td>
+                      <td>1</td>
+                      <td>notice</td>
+                      <td>你的话题已被推荐。（示例）</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-07 10:12:01</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="openModal('msgModal')">编辑</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">撤回</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照（若路由注册后）：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/message/list</code>
+                <code>POST /api/admin/message/create</code>
+                <code>POST /api/admin/message/update</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="msgModal" role="dialog" aria-modal="true" aria-label="Message Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>发送系统消息</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('msgModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field">
+              <label>ToId</label>
+              <input class="input" type="number" value="0" />
+            </div>
+            <div class="field">
+              <label>类型</label>
+              <select class="select">
+                <option selected>system</option>
+                <option>notice</option>
+                <option>user</option>
+              </select>
+            </div>
+            <div class="field wide">
+              <label>内容 *</label>
+              <textarea class="input" placeholder="输入消息内容">欢迎加入 BBS-GO！</textarea>
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="select">
+                <option selected>正常</option>
+                <option>已撤回</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>优先级（原型）</label>
+              <select class="select">
+                <option selected>普通</option>
+                <option>高</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('msgModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('msgModal')">发送</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){var el=document.getElementById("msgModal");if(el&&el.style.display==="flex")el.style.display="none"}})
+      document.getElementById("msgModal").addEventListener("click",function(e){if(e.target===this)closeModal("msgModal")})
+    </script>
+  </body>
+</html>

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - User</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">内容</div>
+          <a class="active" href="./users.html">User</a>
+          <a href="./topics.html">Topic</a>
+          <a href="./articles.html">Article</a>
+          <div class="nav-section">Growth</div>
+          <a href="./tasks.html">Tasks</a>
+          <a href="./badges.html">Badges</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>内容</span>
+            <span>›</span>
+            <b>User</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">User</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>User</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>用户ID</label>
+                  <input class="input" value="1" />
+                </div>
+                <div class="field">
+                  <label>用户名</label>
+                  <input class="input" value="admin" />
+                </div>
+                <div class="field">
+                  <label>昵称</label>
+                  <input class="input" value="admin" />
+                </div>
+                <div class="field">
+                  <label>用户类型</label>
+                  <select class="select">
+                    <option selected>用户</option>
+                    <option>管理员</option>
+                    <option>游客</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:70px">编号</th>
+                      <th style="width:120px">加密编号</th>
+                      <th style="width:90px">类型</th>
+                      <th style="width:80px">头像</th>
+                      <th style="width:120px">用户名</th>
+                      <th style="width:120px">昵称</th>
+                      <th style="width:180px">邮箱</th>
+                      <th style="width:80px">积分</th>
+                      <th style="width:80px">等级</th>
+                      <th style="width:100px">是否禁言</th>
+                      <th style="width:170px">注册时间</th>
+                      <th style="width:110px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td><a href="#">ESJZJ3xzSKi</a></td>
+                      <td><span class="pill">用户</span></td>
+                      <td><span class="avatar">A</span></td>
+                      <td><a href="#">admin</a></td>
+                      <td><a href="#">admin</a></td>
+                      <td></td>
+                      <td>111</td>
+                      <td>3</td>
+                      <td>-</td>
+                      <td>2026-02-24 14:32:31</td>
+                      <td>
+                        <div class="menu">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="openModal('userModal')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/user/list</code>
+                <code>POST /api/admin/user/update</code>
+                <code>POST /api/admin/user/forbidden</code>
+                <code>POST /api/admin/user/reset_password</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="userModal" role="dialog" aria-modal="true" aria-label="User Edit Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>编辑</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('userModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field wide">
+              <label>类型 *</label>
+              <select class="select">
+                <option selected>用户</option>
+                <option>管理员</option>
+              </select>
+            </div>
+            <div class="field wide">
+              <label>昵称 *</label>
+              <input class="input" value="admin" />
+            </div>
+            <div class="field wide">
+              <label>头像</label>
+              <div style="display:flex;align-items:center;gap:12px">
+                <span class="avatar" style="width:60px;height:60px;font-size:22px">A</span>
+                <span style="color:var(--muted);font-size:12px">原型仅展示；实际可接入上传或头像URL编辑</span>
+              </div>
+            </div>
+            <div class="field wide">
+              <label>用户名</label>
+              <input class="input" value="admin" />
+            </div>
+            <div class="field wide">
+              <label>邮箱</label>
+              <input class="input" value="" />
+            </div>
+            <div class="field">
+              <label>性别</label>
+              <select class="select">
+                <option selected>未知</option>
+                <option>男</option>
+                <option>女</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>主页</label>
+              <input class="input" value="" />
+            </div>
+            <div class="field wide">
+              <label>描述</label>
+              <input class="input" value="" />
+            </div>
+            <div class="field wide">
+              <label>角色</label>
+              <div class="rolebox">
+                <span class="rolechip">Owner <span style="cursor:pointer">×</span></span>
+                <span class="rolechip" style="background:#f2f3f5;border-color:var(--line);color:var(--muted)">+ 添加角色</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('userModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('userModal')">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){var el=document.getElementById("userModal");if(el&&el.style.display==="flex")el.style.display="none"}})
+      document.getElementById("userModal").addEventListener("click",function(e){if(e.target===this)closeModal("userModal")})
+    </script>
+  </body>
+</html>

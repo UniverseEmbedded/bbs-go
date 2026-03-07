@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - User Feeds</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">User</div>
+          <a href="./third-users.html">Third Users</a>
+          <a href="./user-follows.html">User Follows</a>
+          <a class="active" href="./user-feeds.html">User Feeds</a>
+          <div class="nav-section">More</div>
+          <a href="./topics.html">Topic</a>
+          <a href="./articles.html">Article</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>User</span>
+            <span>›</span>
+            <b>User Feeds</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">User Feeds</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>User Feeds</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="banner">
+                <b>注意</b>
+                <span>后端存在 admin/user_feed_controller，但当前路由可能未注册。原型用于排查“用户动态流”的生成与展示。</span>
+              </div>
+              <div class="filters">
+                <div class="field">
+                  <label>用户ID</label>
+                  <input class="input" value="1" />
+                </div>
+                <div class="field">
+                  <label>实体类型</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>topic</option>
+                    <option>article</option>
+                    <option>comment</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>实体ID</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <label>状态（原型）</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>正常</option>
+                    <option>已删除</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:110px">userId</th>
+                      <th style="width:120px">entityType</th>
+                      <th style="width:110px">entityId</th>
+                      <th>摘要</th>
+                      <th style="width:110px">状态</th>
+                      <th style="width:170px">create_time</th>
+                      <th style="width:170px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>8101</td>
+                      <td>1</td>
+                      <td>topic</td>
+                      <td>4</td>
+                      <td>发布话题：Welcome to BBS-GO!（示例）</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-05 16:33:12</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px">查看</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>8102</td>
+                      <td>1</td>
+                      <td>comment</td>
+                      <td>8801</td>
+                      <td>发表评论（示例）</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-06 09:33:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px">查看</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>8103</td>
+                      <td>2</td>
+                      <td>article</td>
+                      <td>9</td>
+                      <td>发布文章（示例）</td>
+                      <td><span class="tag off">已删除</span></td>
+                      <td>2026-03-07 10:12:01</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px">查看</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照（若路由注册后）：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/user-feed/list</code>
+                <code>POST /api/admin/user-feed/update</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型索引</title>
+    <link rel="stylesheet" href="./common.css" />
+    <style>
+      a{color:var(--primary);text-decoration:none}
+      a:hover{text-decoration:underline}
+      .wrap{max-width:1080px;margin:0 auto;padding:22px}
+      .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+      h1{margin:0;font-size:20px}
+      .meta{color:var(--muted);font-size:13px}
+      .panel{padding:14px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      @media (max-width:920px){.grid{grid-template-columns:1fr}}
+      h2{margin:0 0 10px;font-size:14px}
+      ul{margin:0;padding-left:18px}
+      li{margin:7px 0;line-height:1.4}
+      code{background:#f2f3f5;border:1px solid var(--line);padding:1px 6px;border-radius:8px;color:#4e5969;font-size:12px}
+      .tip{margin-top:12px;color:var(--muted);font-size:12px}
+      .tag{display:inline-flex;align-items:center;border:1px solid var(--line);background:#fff;border-radius:999px;padding:2px 8px;font-size:12px;color:var(--muted);margin-left:6px}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="head">
+        <h1>BBS-GO Admin 原型索引</h1>
+        <div class="meta">位置：规划15/admin_prototype · 纯 HTML 原型 · 不接后端</div>
+      </div>
+      <div class="grid">
+        <section class="panel">
+          <h2>Growth</h2>
+          <ul>
+            <li><a href="./tasks.html">Tasks</a> <code>/api/admin/task-config/*</code></li>
+            <li><a href="./badges.html">Badges</a> <code>/api/admin/badge/*</code></li>
+            <li><a href="./levels.html">Levels</a> <code>/api/admin/level-config/*</code></li>
+            <li><a href="./task-logs.html">Task Logs</a> <code>/api/admin/user-task-log/*</code></li>
+            <li><a href="./exp-logs.html">Exp Logs</a> <code>/api/admin/user-exp-log/*</code></li>
+            <li><a href="./user-badges.html">User Badges</a> <code>/api/admin/user-badge/*</code></li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>Vote</h2>
+          <ul>
+            <li><a href="./votes.html">Votes</a> <code>/api/admin/vote/*</code></li>
+            <li><a href="./vote-options.html">Vote Options</a> <code>/api/admin/vote-option/*</code></li>
+            <li><a href="./vote-records.html">Vote Records</a> <code>/api/admin/vote-record/*</code></li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>Interaction / Verify</h2>
+          <ul>
+            <li><a href="./messages.html">Messages</a> <code>/api/admin/message/*</code> <span class="tag">可能未注册路由</span></li>
+            <li><a href="./check-ins.html">Check-ins</a> <code>/api/admin/check-in/*</code> <span class="tag">可能未注册路由</span></li>
+            <li><a href="./email-codes.html">Email Codes</a> <code>/api/admin/email-code/*</code> <span class="tag">可能未注册路由</span></li>
+            <li><a href="./sms-codes.html">SMS Codes</a> <code>/api/admin/sms-code/*</code> <span class="tag">可能未注册路由</span></li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>Logs</h2>
+          <ul>
+            <li><a href="./operate-logs.html">Operate Logs</a> <code>/api/admin/operate-log/*</code></li>
+            <li><a href="./user-score-logs.html">User Score Logs</a> <code>/api/admin/user-score-log/*</code></li>
+            <li><a href="./email-logs.html">Email Logs</a> <code>/api/admin/email-log/*</code></li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>User Relations</h2>
+          <ul>
+            <li><a href="./third-users.html">Third Users</a> <code>/api/admin/third-user/*</code> <span class="tag">可能未注册路由</span></li>
+            <li><a href="./user-follows.html">User Follows</a> <code>/api/admin/user-follow/*</code> <span class="tag">可能未注册路由</span></li>
+            <li><a href="./user-feeds.html">User Feeds</a> <code>/api/admin/user-feed/*</code> <span class="tag">可能未注册路由</span></li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>More</h2>
+          <ul>
+            <li><a href="./tags.html">Tags</a> <code>/api/admin/tag/*</code></li>
+            <li><a href="./comments.html">Comments</a> <code>/api/admin/comment/*</code></li>
+            <li><a href="./favorites.html">Favorites</a> <code>/api/admin/favorite/*</code></li>
+            <li><a href="./article-tags.html">Article Tags</a> <code>/api/admin/article-tag/*</code></li>
+            <li><a href="./user-reports.html">User Reports</a> <code>/api/admin/user-report/*</code></li>
+            <li><a href="./migrations.html">Migrations</a> <code>/api/admin/migration/*</code> <span class="tag">可能未注册路由</span></li>
+            <li><a href="./user-task-events.html">Task Events</a> <code>/api/admin/user-task-event/*</code></li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>已实现页面（按截图做占位还原）</h2>
+          <ul>
+            <li><a href="./dashboard.html">Dashboard</a> <code>/api/admin/common/system_info</code></li>
+            <li><a href="./users.html">User</a> <code>/api/admin/user/*</code></li>
+            <li><a href="./topics.html">Topic</a> <code>/api/admin/topic/*</code></li>
+            <li><a href="./articles.html">Article</a> <code>/api/admin/article/*</code></li>
+            <li><a href="./forbidden-words.html">Forbidden Words</a> <code>/api/admin/forbidden-word/*</code></li>
+          </ul>
+        </section>
+      </div>
+      <div class="tip">
+        打开方式：直接用浏览器打开本目录下的 index.html；各页面为独立静态原型，不依赖构建与接口。
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Task Logs</title>
+    <link rel="stylesheet" href="./common.css" />
+    <style>
+      .filters{grid-template-columns:240px 240px 1fr}
+      table{min-width:1000px}
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">概览</div>
+          <a href="./dashboard.html">Dashboard</a>
+          <div class="nav-section">内容</div>
+          <a href="./users.html">User</a>
+          <a href="./topics.html">Topic</a>
+          <a href="./articles.html">Article</a>
+          <div class="nav-section">Growth</div>
+          <a href="./tasks.html">Tasks</a>
+          <a href="./badges.html">Badges</a>
+          <a href="./levels.html">Levels</a>
+          <a class="active" href="./task-logs.html">Task Logs</a>
+          <a href="./exp-logs.html">Exp Logs</a>
+          <a href="./user-badges.html">User Badges</a>
+          <div class="nav-section">More</div>
+          <a href="./votes.html">Votes</a>
+          <a href="./operate-logs.html">Operate Logs</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Growth</span>
+            <span>›</span>
+            <b>Task Logs</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Task Logs</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Task Logs</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>用户ID</label>
+                  <input class="input" placeholder="userId" value="1" />
+                </div>
+                <div class="field">
+                  <label>任务ID</label>
+                  <input class="input" placeholder="taskId" value="6" />
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:80px">ID</th>
+                      <th style="width:90px">用户ID</th>
+                      <th style="width:90px">任务ID</th>
+                      <th style="width:110px">周期Key</th>
+                      <th style="width:100px">完成序号</th>
+                      <th style="width:80px">积分</th>
+                      <th style="width:80px">经验</th>
+                      <th style="width:90px">勋章ID</th>
+                      <th style="width:170px">创建时间</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>23</td>
+                      <td>1</td>
+                      <td>6</td>
+                      <td>20260307</td>
+                      <td>1</td>
+                      <td>2</td>
+                      <td>5</td>
+                      <td>0</td>
+                      <td>2026-03-07 10:47:58</td>
+                    </tr>
+                    <tr>
+                      <td>22</td>
+                      <td>1</td>
+                      <td>6</td>
+                      <td>20260306</td>
+                      <td>1</td>
+                      <td>2</td>
+                      <td>5</td>
+                      <td>0</td>
+                      <td>2026-03-06 09:33:02</td>
+                    </tr>
+                    <tr>
+                      <td>21</td>
+                      <td>1</td>
+                      <td>8</td>
+                      <td>20260305</td>
+                      <td>1</td>
+                      <td>8</td>
+                      <td>15</td>
+                      <td>0</td>
+                      <td>2026-03-05 16:33:12</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="footer">
+                <div>共 23 条</div>
+                <div class="pager">
+                  <span class="pagebox">1</span>
+                  <span class="pagebox" style="color:var(--muted)">2</span>
+                  <span class="pagebox" style="color:var(--muted)">›</span>
+                  <span style="margin-left:10px">20 条/页</span>
+                </div>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/user-task-log/list</code>
+                <code>GET /api/admin/user-task-log/{id}</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - User Badges</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">概览</div>
+          <a href="./dashboard.html">Dashboard</a>
+          <div class="nav-section">内容</div>
+          <a href="./users.html">User</a>
+          <a href="./topics.html">Topic</a>
+          <a href="./articles.html">Article</a>
+          <div class="nav-section">Growth</div>
+          <a href="./tasks.html">Tasks</a>
+          <a href="./badges.html">Badges</a>
+          <a href="./levels.html">Levels</a>
+          <a href="./task-logs.html">Task Logs</a>
+          <a href="./exp-logs.html">Exp Logs</a>
+          <a class="active" href="./user-badges.html">User Badges</a>
+          <div class="nav-section">More</div>
+          <a href="./votes.html">Votes</a>
+          <a href="./operate-logs.html">Operate Logs</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Growth</span>
+            <span>›</span>
+            <b>User Badges</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">User Badges</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>User Badges</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>用户ID</label>
+                  <input class="input" placeholder="userId" value="1" />
+                </div>
+                <div class="field">
+                  <label>徽章ID</label>
+                  <input class="input" placeholder="badgeId" value="" />
+                </div>
+                <div class="field">
+                  <label>来源类型</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>task</option>
+                    <option>admin</option>
+                    <option>vote</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:80px">ID</th>
+                      <th style="width:90px">用户ID</th>
+                      <th style="width:90px">徽章ID</th>
+                      <th style="width:90px">图标</th>
+                      <th style="width:120px">来源类型</th>
+                      <th style="width:170px">获取时间</th>
+                      <th style="width:90px">佩戴</th>
+                      <th style="width:90px">状态</th>
+                      <th style="width:170px">创建时间</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>301</td>
+                      <td>1</td>
+                      <td>1</td>
+                      <td><span class="icon">🏅</span></td>
+                      <td>task</td>
+                      <td>2026-02-24 14:40:12</td>
+                      <td><span class="tag ok">是</span></td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-02-24 14:40:12</td>
+                    </tr>
+                    <tr>
+                      <td>302</td>
+                      <td>1</td>
+                      <td>6</td>
+                      <td><span class="icon">🎖️</span></td>
+                      <td>task</td>
+                      <td>2026-03-05 16:33:12</td>
+                      <td><span class="tag">否</span></td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-03-05 16:33:12</td>
+                    </tr>
+                    <tr>
+                      <td>303</td>
+                      <td>2</td>
+                      <td>8</td>
+                      <td><span class="icon">🏵️</span></td>
+                      <td>admin</td>
+                      <td>2026-02-24 15:10:00</td>
+                      <td><span class="tag">否</span></td>
+                      <td><span class="tag off">禁用</span></td>
+                      <td>2026-02-24 15:10:00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="footer">
+                <div>共 48 条</div>
+                <div class="pager">
+                  <span class="pagebox">1</span>
+                  <span class="pagebox" style="color:var(--muted)">2</span>
+                  <span class="pagebox" style="color:var(--muted)">›</span>
+                  <span style="margin-left:10px">20 条/页</span>
+                </div>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/user-badge/list</code>
+                <code>GET /api/admin/user-badge/{id}</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

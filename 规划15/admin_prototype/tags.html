@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Tags</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">More</div>
+          <a class="active" href="./tags.html">Tags</a>
+          <a href="./comments.html">Comments</a>
+          <a href="./favorites.html">Favorites</a>
+          <a href="./article-tags.html">Article Tags</a>
+          <div class="nav-section">Vote</div>
+          <a href="./votes.html">Votes</a>
+          <a href="./vote-options.html">Vote Options</a>
+          <a href="./vote-records.html">Vote Records</a>
+          <div class="nav-section">Interaction</div>
+          <a href="./messages.html">Messages</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>More</span>
+            <span>›</span>
+            <b>Tags</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Tags</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Tags</h1>
+              <button class="btn primary" type="button" onclick="openModal('tagModal')">+ 新增</button>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>ID（like）</label>
+                  <input class="input" placeholder="id" value="" />
+                </div>
+                <div class="field">
+                  <label>名称（like）</label>
+                  <input class="input" placeholder="name" value="Default" />
+                </div>
+                <div class="field">
+                  <label>状态</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>正常</option>
+                    <option>禁用</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div class="hint">
+                自动补全原型：在“名称”输入框里输入关键词，前端可调用 <b>GET /api/admin/tag/autocomplete?keyword=xxx</b> 返回前缀匹配建议。
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:80px">ID</th>
+                      <th style="width:220px">名称</th>
+                      <th>描述</th>
+                      <th style="width:110px">状态</th>
+                      <th style="width:170px">更新时间</th>
+                      <th style="width:140px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Default</td>
+                      <td>默认标签（示例）</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-02-24 14:32:31</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('tagModal')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Announcement</td>
+                      <td>公告</td>
+                      <td><span class="tag off">禁用</span></td>
+                      <td>2026-03-01 18:03:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('tagModal')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/tag/list</code>
+                <code>POST /api/admin/tag/create</code>
+                <code>POST /api/admin/tag/update</code>
+                <code>GET /api/admin/tag/autocomplete</code>
+                <code>GET /api/admin/tag/tags</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="tagModal" role="dialog" aria-modal="true" aria-label="Tag Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>新增 / 编辑</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('tagModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field wide">
+              <label>名称 *</label>
+              <input class="input" value="Default" />
+            </div>
+            <div class="field wide">
+              <label>描述</label>
+              <input class="input" value="默认标签（示例）" />
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="select">
+                <option selected>正常</option>
+                <option>禁用</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>排序（原型）</label>
+              <input class="input" type="number" value="0" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('tagModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('tagModal')">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){var el=document.getElementById("tagModal");if(el&&el.style.display==="flex")el.style.display="none"}})
+      document.getElementById("tagModal").addEventListener("click",function(e){if(e.target===this)closeModal("tagModal")})
+    </script>
+  </body>
+</html>

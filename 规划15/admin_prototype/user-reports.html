@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - User Reports</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">Moderation</div>
+          <a class="active" href="./user-reports.html">User Reports</a>
+          <a href="./forbidden-words.html">Forbidden Words</a>
+          <div class="nav-section">Logs</div>
+          <a href="./operate-logs.html">Operate Logs</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Moderation</span>
+            <span>›</span>
+            <b>User Reports</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">User Reports</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>User Reports</h1>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>举报人ID（原型）</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <label>被举报人ID（原型）</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <label>实体类型</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>topic</option>
+                    <option>comment</option>
+                    <option>article</option>
+                    <option>user</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>实体ID</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <label>状态（原型）</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>待处理</option>
+                    <option>已处理</option>
+                    <option>忽略</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:110px">reportUserId</th>
+                      <th style="width:110px">targetUserId</th>
+                      <th style="width:120px">entityType</th>
+                      <th style="width:110px">entityId</th>
+                      <th>原因</th>
+                      <th style="width:120px">状态</th>
+                      <th style="width:170px">create_time</th>
+                      <th style="width:170px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>12001</td>
+                      <td>2</td>
+                      <td>1</td>
+                      <td>comment</td>
+                      <td>8802</td>
+                      <td>辱骂/引战（示例）</td>
+                      <td><span class="tag bad">待处理</span></td>
+                      <td>2026-03-07 10:12:01</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('reportModal')">处理</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>12000</td>
+                      <td>3</td>
+                      <td>2</td>
+                      <td>topic</td>
+                      <td>4</td>
+                      <td>广告/灌水（示例）</td>
+                      <td><span class="tag ok">已处理</span></td>
+                      <td>2026-03-06 09:33:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px" onclick="openModal('reportModal')">查看</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/user-report/list</code>
+                <code>POST /api/admin/user-report/create</code>
+                <code>POST /api/admin/user-report/update</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="reportModal" role="dialog" aria-modal="true" aria-label="User Report Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>处理举报</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('reportModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field">
+              <label>状态</label>
+              <select class="select">
+                <option selected>已处理</option>
+                <option>忽略</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>处理动作（原型）</label>
+              <select class="select">
+                <option selected>无</option>
+                <option>删除内容</option>
+                <option>禁言用户</option>
+              </select>
+            </div>
+            <div class="field wide">
+              <label>处理备注</label>
+              <textarea class="input">已删除违规评论（示例）</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('reportModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('reportModal')">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){var el=document.getElementById("reportModal");if(el&&el.style.display==="flex")el.style.display="none"}})
+      document.getElementById("reportModal").addEventListener("click",function(e){if(e.target===this)closeModal("reportModal")})
+    </script>
+  </body>
+</html>

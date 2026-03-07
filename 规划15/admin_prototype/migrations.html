@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Migrations</title>
+    <link rel="stylesheet" href="./common.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">Ops</div>
+          <a class="active" href="./migrations.html">Migrations</a>
+          <a href="./user-task-events.html">Task Events</a>
+          <div class="nav-section">Logs</div>
+          <a href="./operate-logs.html">Operate Logs</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Ops</span>
+            <span>›</span>
+            <b>Migrations</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Migrations</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Migrations</h1>
+              <button class="btn primary" type="button">运行待执行迁移（原型）</button>
+            </div>
+            <div class="panel-bd">
+              <div class="banner">
+                <b>注意</b>
+                <span>后端存在 admin/migration_controller，但当前路由可能未注册。原型用于明确迁移记录的展示与审计。</span>
+              </div>
+              <div class="filters">
+                <div class="field">
+                  <label>version（原型）</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <label>状态</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>applied</option>
+                    <option>pending</option>
+                    <option>failed</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>关键词（name）</label>
+                  <input class="input" value="" />
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:90px">ID</th>
+                      <th style="width:160px">version</th>
+                      <th style="width:260px">name</th>
+                      <th style="width:120px">status</th>
+                      <th>detail</th>
+                      <th style="width:170px">apply_time</th>
+                      <th style="width:170px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>20260301_01</td>
+                      <td>init_task_tables</td>
+                      <td><span class="tag ok">applied</span></td>
+                      <td>初始化任务相关表（示例）</td>
+                      <td>2026-03-01 18:03:02</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px">查看SQL</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除记录</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>20260307_02</td>
+                      <td>backfill_badge_icons</td>
+                      <td><span class="tag bad">failed</span></td>
+                      <td>图标回填失败：缺少文件（示例）</td>
+                      <td>2026-03-07 10:12:01</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn ghost" type="button" style="height:30px;padding:0 10px">重试</button>
+                          <button class="btn danger" type="button" style="height:30px;padding:0 10px">删除记录</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="api">
+                API 对照（若路由注册后）：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>ANY /api/admin/migration/list</code>
+                <code>POST /api/admin/migration/create</code>
+                <code>POST /api/admin/migration/update</code>
+                <code>POST /api/admin/migration/delete</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

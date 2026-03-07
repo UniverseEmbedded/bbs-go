@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BBS-GO Admin 原型 - Tasks</title>
+    <link rel="stylesheet" href="./common.css" />
+    <style>
+      .filters{grid-template-columns:1.2fr 1fr 1fr 1fr 180px 1fr}
+      table{min-width:1100px}
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">BBS-GO</div>
+            <div style="color:var(--muted);font-size:12px">Admin Prototype</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-section">概览</div>
+          <a href="./dashboard.html">Dashboard</a>
+          <div class="nav-section">内容</div>
+          <a href="./users.html">User</a>
+          <a href="./topics.html">Topic</a>
+          <a href="./articles.html">Article</a>
+          <div class="nav-section">Growth</div>
+          <a class="active" href="./tasks.html">Tasks</a>
+          <a href="./badges.html">Badges</a>
+          <a href="./levels.html">Levels</a>
+          <a href="./task-logs.html">Task Logs</a>
+          <a href="./exp-logs.html">Exp Logs</a>
+          <a href="./user-badges.html">User Badges</a>
+          <div class="nav-section">More</div>
+          <a href="./votes.html">Votes</a>
+          <a href="./operate-logs.html">Operate Logs</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="crumbs">
+            <span>Growth</span>
+            <span>›</span>
+            <b>Tasks</b>
+          </div>
+          <div class="actions">
+            <span class="chip">admin</span>
+            <span class="chip">2026-03-07</span>
+          </div>
+        </header>
+        <div class="content">
+          <div class="tabs">
+            <a class="tab" href="./index.html">原型索引</a>
+            <span class="tab active">Tasks</span>
+          </div>
+          <section class="panel">
+            <div class="panel-hd">
+              <h1>Tasks</h1>
+              <button class="btn primary" type="button" onclick="openModal('taskModal')">+ 新增</button>
+            </div>
+            <div class="panel-bd">
+              <div class="filters">
+                <div class="field">
+                  <label>标题</label>
+                  <input class="input" placeholder="支持模糊匹配" value="First check-in" />
+                </div>
+                <div class="field">
+                  <label>任务分组</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>Newbie Tasks</option>
+                    <option>Daily Tasks</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>事件类型</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>Check-in</option>
+                    <option>Create topic</option>
+                    <option>Create comment</option>
+                    <option>Follow user</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>周期</label>
+                  <select class="select">
+                    <option>全部</option>
+                    <option selected>一次性</option>
+                    <option>每天</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>状态</label>
+                  <select class="select">
+                    <option selected>正常</option>
+                    <option>禁用</option>
+                    <option>已删除</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <button class="btn primary" type="button">查询</button>
+                  <button class="btn ghost" type="button" style="margin-left:8px">重置</button>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:64px">ID</th>
+                      <th style="width:160px">任务分组</th>
+                      <th>标题</th>
+                      <th style="width:140px">事件类型</th>
+                      <th style="width:90px">周期</th>
+                      <th style="width:80px">积分</th>
+                      <th style="width:80px">经验</th>
+                      <th style="width:80px">勋章</th>
+                      <th style="width:90px">事件次数</th>
+                      <th style="width:110px">最多完成次数</th>
+                      <th style="width:90px">状态</th>
+                      <th style="width:170px">更新时间</th>
+                      <th style="width:100px">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Newbie Tasks</td>
+                      <td>First check-in</td>
+                      <td>Check-in</td>
+                      <td>一次性</td>
+                      <td>10</td>
+                      <td>20</td>
+                      <td>1</td>
+                      <td>1</td>
+                      <td>1</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-02-24 14:32:31</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('taskModal')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Newbie Tasks</td>
+                      <td>First post</td>
+                      <td>Create topic</td>
+                      <td>一次性</td>
+                      <td>20</td>
+                      <td>40</td>
+                      <td>2</td>
+                      <td>1</td>
+                      <td>1</td>
+                      <td><span class="tag ok">正常</span></td>
+                      <td>2026-02-24 14:32:31</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('taskModal')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>6</td>
+                      <td>Daily Tasks</td>
+                      <td>Daily check-in</td>
+                      <td>Check-in</td>
+                      <td>每天</td>
+                      <td>2</td>
+                      <td>5</td>
+                      <td>0</td>
+                      <td>1</td>
+                      <td>1</td>
+                      <td><span class="tag off">禁用</span></td>
+                      <td>2026-03-05 16:30:43</td>
+                      <td>
+                        <div class="row-actions">
+                          <button class="btn primary" type="button" style="height:30px;padding:0 10px" onclick="openModal('taskModal')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="footer">
+                <div>共 20 条</div>
+                <div class="pager">
+                  <span class="pagebox">1</span>
+                  <span class="pagebox" style="color:var(--muted)">2</span>
+                  <span class="pagebox" style="color:var(--muted)">›</span>
+                  <span style="margin-left:10px">20 条/页</span>
+                </div>
+              </div>
+              <div class="api">
+                API 对照：
+                <span style="display:inline-block;margin-left:6px"></span>
+                <code>GET /api/admin/task-config/groups</code>
+                <code>ANY /api/admin/task-config/list</code>
+                <code>POST /api/admin/task-config/create</code>
+                <code>POST /api/admin/task-config/update</code>
+                <code>POST /api/admin/task-config/delete</code>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-mask" id="taskModal" role="dialog" aria-modal="true" aria-label="Task Modal">
+      <div class="modal">
+        <div class="modal-hd">
+          <h2>新增 / 编辑</h2>
+          <button class="iconbtn" type="button" onclick="closeModal('taskModal')" aria-label="Close">×</button>
+        </div>
+        <div class="modal-bd">
+          <div class="form">
+            <div class="field wide">
+              <label>标题 *</label>
+              <input class="input" value="Daily check-in" />
+            </div>
+            <div class="field">
+              <label>任务分组 *</label>
+              <select class="select">
+                <option>Newbie Tasks</option>
+                <option selected>Daily Tasks</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>事件类型 *</label>
+              <select class="select">
+                <option selected>Check-in</option>
+                <option>Create topic</option>
+                <option>Create comment</option>
+                <option>Follow user</option>
+              </select>
+            </div>
+            <div class="field wide">
+              <label>描述</label>
+              <input class="input" value="Checked in for today" />
+            </div>
+            <div class="field">
+              <label>周期 *</label>
+              <select class="select">
+                <option>一次性</option>
+                <option selected>每天</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>勋章</label>
+              <select class="select">
+                <option selected>无</option>
+                <option>badge_newcomer</option>
+                <option>badge_streak_7</option>
+              </select>
+              <div class="help">保存时可写入 badgeId；列表展示 badgeId 或徽章标识。</div>
+            </div>
+            <div class="field">
+              <label>事件次数 *</label>
+              <div class="num">
+                <input class="input" type="number" value="1" />
+              </div>
+            </div>
+            <div class="field">
+              <label>最多完成次数 *</label>
+              <div class="num">
+                <input class="input" type="number" value="1" />
+              </div>
+            </div>
+            <div class="field">
+              <label>积分</label>
+              <input class="input" type="number" value="2" />
+            </div>
+            <div class="field">
+              <label>经验</label>
+              <input class="input" type="number" value="5" />
+            </div>
+            <div class="field wide">
+              <label>按钮文案</label>
+              <input class="input" placeholder="例如：去签到" value="去签到" />
+            </div>
+            <div class="field wide">
+              <label>跳转链接</label>
+              <input class="input" placeholder="例如：/checkin" value="/checkin" />
+            </div>
+            <div class="field">
+              <label>排序</label>
+              <input class="input" type="number" value="0" />
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="select">
+                <option selected>正常</option>
+                <option>禁用</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn ghost" type="button" onclick="closeModal('taskModal')">取消</button>
+          <button class="btn primary" type="button" onclick="closeModal('taskModal')">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="flex"}
+      function closeModal(id){var el=document.getElementById(id);if(!el)return;el.style.display="none"}
+      window.addEventListener("keydown",function(e){if(e.key==="Escape"){["taskModal"].forEach(function(id){var el=document.getElementById(id);if(el&&el.style.display==="flex")el.style.display="none"})}})
+      document.getElementById("taskModal").addEventListener("click",function(e){if(e.target===this)closeModal("taskModal")})
+    </script>
+  </body>
+</html>
