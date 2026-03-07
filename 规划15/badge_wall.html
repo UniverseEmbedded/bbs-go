@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勋章墙原型 - BBS-GO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <style>
+        body { background-color: #f5f7fa; min-height: 100vh; }
+        .badge-card { background: #fff; border-radius: 8px; padding: 20px; text-align: center; transition: all .3s; position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .badge-card:hover { transform: translateY(-5px); box-shadow: 0 4px 16px 0 rgba(0,0,0,.1); }
+        .badge-icon { width: 80px; height: 80px; margin-bottom: 10px; filter: grayscale(100%); opacity: 0.6; transition: all .3s; }
+        .badge-card.is-owned .badge-icon { filter: grayscale(0); opacity: 1; }
+        .badge-name { font-weight: 600; font-size: 16px; margin-bottom: 5px; color: #303133; }
+        .badge-desc { font-size: 12px; color: #909399; margin-bottom: 10px; }
+        .badge-time { font-size: 12px; color: #67c23a; background: #f0f9eb; padding: 2px 6px; border-radius: 4px; }
+        .sidebar-widget { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 12px 0 rgba(0,0,0,.1); }
+        .mini-badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .mini-badge { text-align: center; }
+        .mini-badge img { width: 40px; height: 40px; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 导航栏 -->
+        <nav class="navbar is-white has-shadow mb-5">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="#">BBS-GO</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="columns">
+                <!-- 左侧：勋章墙 -->
+                <div class="column is-9">
+                    <div class="box" style="background: transparent; box-shadow: none; padding: 0;">
+                        <h1 class="title is-4 mb-5">勋章墙</h1>
+                        
+                        <div class="columns is-multiline">
+                            <div class="column is-3" v-for="badge in badges" :key="badge.id">
+                                <div class="badge-card" :class="{'is-owned': badge.owned}">
+                                    <!-- 模拟勋章图标：使用 FontAwesome 图标代替 SVG -->
+                                    <div class="badge-icon is-flex is-align-items-center is-justify-content-center" style="font-size: 48px; color: #e6a23c;">
+                                        <i :class="badge.icon"></i>
+                                    </div>
+                                    <div class="badge-name">{{ badge.name }}</div>
+                                    <div class="badge-desc">{{ badge.description }}</div>
+                                    <div class="badge-time" v-if="badge.owned">
+                                        获得于 {{ badge.obtainTime }}
+                                    </div>
+                                    <div class="badge-time has-text-grey-light" style="background: #f4f4f5;" v-else>
+                                        未获得
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：侧边栏 -->
+                <div class="column is-3">
+                    <!-- 个人资料卡片 -->
+                    <div class="sidebar-widget">
+                        <div class="media">
+                            <div class="media-left">
+                                <figure class="image is-48x48">
+                                    <img class="is-rounded" src="https://bulma.io/images/placeholders/96x96.png" alt="Avatar">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <p class="title is-6">User123</p>
+                                <p class="subtitle is-7">Lv.3</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 个人成就/勋章小组件 -->
+                    <div class="sidebar-widget">
+                        <div class="is-flex is-justify-content-space-between mb-3">
+                            <h3 class="title is-6 mb-0">我的勋章</h3>
+                            <a href="#" class="is-size-7">查看全部 <i class="fas fa-angle-right"></i></a>
+                        </div>
+                        <div class="mini-badge-grid">
+                            <div class="mini-badge" v-for="badge in ownedBadges.slice(0, 4)" :key="badge.id">
+                                <div class="is-flex is-align-items-center is-justify-content-center" style="width: 40px; height: 40px; background: #fdf6ec; border-radius: 50%; color: #e6a23c; margin: 0 auto;">
+                                    <i :class="badge.icon"></i>
+                                </div>
+                            </div>
+                            <div v-if="ownedBadges.length === 0" class="is-size-7 has-text-grey has-text-centered" style="grid-column: span 4;">
+                                暂无勋章
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                badges: [
+                    { id: 1, name: '新人报到', description: '注册成功即可获得', icon: 'fas fa-baby', owned: true, obtainTime: '2023-01-01' },
+                    { id: 2, name: '初次发言', description: '发布第一个帖子', icon: 'fas fa-comment-dots', owned: true, obtainTime: '2023-01-02' },
+                    { id: 3, name: '热心助人', description: '评论被采纳 10 次', icon: 'fas fa-hand-holding-heart', owned: false },
+                    { id: 4, name: '坚持一周', description: '连续签到 7 天', icon: 'fas fa-calendar-check', owned: false },
+                    { id: 5, name: '月度打卡王', description: '连续签到 30 天', icon: 'fas fa-calendar-alt', owned: false },
+                    { id: 6, name: '资深玩家', description: '等级达到 Lv.5', icon: 'fas fa-user-astronaut', owned: false },
+                    { id: 7, name: '内容创作者', description: '发布 100 篇帖子', icon: 'fas fa-pen-nib', owned: false },
+                    { id: 8, name: '人气之星', description: '获得 1000 个赞', icon: 'fas fa-fire', owned: false }
+                ]
+            },
+            computed: {
+                ownedBadges() {
+                    return this.badges.filter(b => b.owned);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

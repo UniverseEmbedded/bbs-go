@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号设置原型 - BBS-GO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <style>
+        body { background-color: #f5f7fa; padding-top: 20px; }
+        .settings-container { max-width: 960px; margin: 0 auto; display: flex; gap: 20px; }
+        .sidebar { width: 240px; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 12px 0 rgba(0,0,0,.1); height: fit-content; }
+        .main-content { flex: 1; background: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 12px 0 rgba(0,0,0,.1); }
+        .menu-list a.is-active { background-color: #ecf5ff; color: #409eff; }
+        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid #ebeef5; }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-label { font-weight: 500; width: 100px; }
+        .setting-value { flex: 1; color: #606266; margin-left: 20px; }
+        .setting-action { width: 100px; text-align: right; }
+    </style>
+</head>
+<body>
+    <div id="app" class="settings-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <p class="menu-label">个人中心</p>
+            <ul class="menu-list">
+                <li><a>个人资料</a></li>
+                <li><a class="is-active">账号设置</a></li>
+                <li><a>消息通知</a></li>
+                <li><a>我的收藏</a></li>
+            </ul>
+        </aside>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <h1 class="title is-4 mb-5">账号设置</h1>
+            
+            <div class="setting-item">
+                <div class="setting-label">用户名</div>
+                <div class="setting-value">{{ user.username }}</div>
+                <div class="setting-action">
+                    <a href="#" class="has-text-grey-light" title="用户名只能设置一次">已设置</a>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">邮箱</div>
+                <div class="setting-value">
+                    {{ user.email }}
+                    <span class="tag is-success is-light ml-2" v-if="user.emailVerified">已验证</span>
+                    <span class="tag is-warning is-light ml-2" v-else>未验证</span>
+                </div>
+                <div class="setting-action">
+                    <button class="button is-small is-text">修改</button>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">密码</div>
+                <div class="setting-value">********</div>
+                <div class="setting-action">
+                    <button class="button is-small is-text">修改</button>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">微信</div>
+                <div class="setting-value">
+                    <span v-if="user.wxBind">已绑定：{{ user.wxNickname }}</span>
+                    <span class="has-text-grey-light" v-else>未绑定</span>
+                </div>
+                <div class="setting-action">
+                    <button class="button is-small is-danger is-light" v-if="user.wxBind" @click="unbind('wx')">解绑</button>
+                    <button class="button is-small is-primary is-light" v-else @click="bind('wx')">绑定</button>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-label">Google</div>
+                <div class="setting-value">
+                    <span v-if="user.googleBind">已绑定：{{ user.googleNickname }}</span>
+                    <span class="has-text-grey-light" v-else>未绑定</span>
+                </div>
+                <div class="setting-action">
+                    <button class="button is-small is-danger is-light" v-if="user.googleBind" @click="unbind('google')">解绑</button>
+                    <button class="button is-small is-primary is-light" v-else @click="bind('google')">绑定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                user: {
+                    username: 'User123',
+                    email: 'user123@example.com',
+                    emailVerified: true,
+                    wxBind: false,
+                    wxNickname: '',
+                    googleBind: true,
+                    googleNickname: 'User Google'
+                }
+            },
+            methods: {
+                bind(type) {
+                    alert(`调用绑定接口: /api/login/${type}_login_config?bind=true`);
+                    // 模拟绑定成功
+                    if (type === 'wx') {
+                        this.user.wxBind = true;
+                        this.user.wxNickname = 'WeChat User';
+                    } else {
+                        this.user.googleBind = true;
+                        this.user.googleNickname = 'Google User';
+                    }
+                },
+                unbind(type) {
+                    if (confirm('确定要解绑吗？')) {
+                        alert(`调用解绑接口: /api/login/${type}_unbind`);
+                        // 模拟解绑成功
+                        if (type === 'wx') {
+                            this.user.wxBind = false;
+                        } else {
+                            this.user.googleBind = false;
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

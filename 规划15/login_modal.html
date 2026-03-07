@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录与旋转验证码原型 - BBS-GO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <style>
+        body { margin: 0; background: #f5f9fc; min-height: 100vh; color: #2f3a4f; }
+        .top-nav { background: #fff; border-bottom: 1px solid #eef1f5; }
+        .main-wrap { max-width: 1280px; margin: 0 auto; padding: 0 12px; }
+        .page-main { min-height: calc(100vh - 148px); display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 620px; background: #fff; border: 1px solid #edf1f6; border-radius: 12px; box-shadow: 0 2px 10px rgba(12, 40, 75, .04); padding: 28px 38px 22px; }
+        .login-title { text-align: center; font-size: 42px; font-weight: 800; color: #1f2b45; margin: 2px 0 18px; }
+        .title-icon { margin-right: 8px; font-size: 34px; color: #1f2b45; }
+        .field-label { color: #5f6f89; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .input-wrap { position: relative; }
+        .input-wrap .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #b8c3d8; font-size: 15px; }
+        .input-wrap input { width: 100%; height: 44px; border-radius: 8px; border: 1px solid #dce5f4; background: #f0f6ff; padding: 0 12px 0 38px; font-size: 16px; }
+        .input-wrap input:focus { outline: none; border-color: #2f7df6; box-shadow: 0 0 0 2px rgba(47, 125, 246, .12); }
+        .login-btn { margin-top: 14px; height: 44px; width: 100%; border: none; border-radius: 10px; background: #2f7df6; color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; }
+        .helper-row { margin-top: 12px; display: flex; justify-content: space-between; font-size: 13px; }
+        .helper-row a { color: #7084a5; }
+        .split { margin-top: 16px; display: flex; align-items: center; gap: 12px; color: #7f8faa; font-size: 14px; }
+        .split:before, .split:after { content: ""; flex: 1; height: 1px; background: #edf1f6; }
+        .wx-btn { margin-top: 12px; height: 44px; width: 100%; border-radius: 10px; border: 1px solid #e4ebf6; background: #fff; font-weight: 700; color: #2f3a4f; cursor: pointer; }
+        .wx-btn i { color: #1aad19; margin-right: 6px; }
+        .footer { padding: 20px 0 30px; color: #7f8faa; }
+        .footer a { color: #6a7e9f; margin-right: 14px; }
+        .footer .brand { color: #ff5722; font-weight: 700; }
+        .captcha-modal .modal-content { width: 360px; background: #fff; border-radius: 10px; overflow: hidden; }
+        .cap-head { padding: 14px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+        .cap-title { font-size: 16px; font-weight: 700; color: #2f3a4f; }
+        .cap-body { padding: 0 16px 16px; text-align: center; }
+        .cap-img { width: 240px; height: 240px; margin: 8px auto 12px; border-radius: 50%; border: 1px solid #e4ebf6; overflow: hidden; }
+        .cap-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .12s; }
+        .cap-slider { width: 100%; }
+        .cap-confirm { margin-top: 12px; height: 40px; width: 100%; border: none; border-radius: 8px; background: #2f7df6; color: #fff; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar top-nav">
+            <div class="main-wrap" style="width:100%; display:flex; align-items:center; justify-content:space-between; height:64px;">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <img src="https://bbs.bbs-go.com/images/logo.png" alt="BBS-GO" style="height:32px;">
+                    <a class="has-text-dark has-text-weight-semibold">话题</a>
+                    <a class="has-text-dark has-text-weight-semibold">任务</a>
+                    <a class="has-text-dark has-text-weight-semibold">BBS-GO</a>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button class="button is-small" style="background:#2f7df6; color:#fff; border:none;">发布</button>
+                    <button class="button is-small">登录</button>
+                    <span style="font-size:18px;">☾</span>
+                </div>
+            </div>
+        </nav>
+        <div class="page-main">
+            <div class="login-card">
+                <h1 class="login-title"><i class="fas fa-lock title-icon"></i>账号登录</h1>
+                <div class="field">
+                    <div class="field-label">用户名/邮箱</div>
+                    <div class="input-wrap">
+                        <i class="fas fa-user icon"></i>
+                        <input type="text" placeholder="请输入用户名或邮箱" v-model="form.username">
+                    </div>
+                </div>
+                <div class="field" style="margin-top:10px;">
+                    <div class="field-label">密码</div>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock icon"></i>
+                        <input type="password" placeholder="请输入密码" v-model="form.password">
+                    </div>
+                </div>
+                <button class="login-btn" @click="showCaptcha = true">登录</button>
+                <div class="helper-row">
+                    <a href="#">忘记密码?</a>
+                    <a href="#">没有账号？去注册</a>
+                </div>
+                <div class="split">或使用以下方式登录</div>
+                <button class="wx-btn"><i class="fab fa-weixin"></i> 微信登录</button>
+            </div>
+        </div>
+        <div class="main-wrap footer">
+            <a>关于</a>
+            <a>友情链接</a>
+            <div>Powered by <span class="brand">BBS-GO</span></div>
+        </div>
+        <div class="modal captcha-modal" :class="{'is-active': showCaptcha}">
+            <div class="modal-background" @click="showCaptcha = false"></div>
+            <div class="modal-content">
+                <div class="cap-head">
+                    <span class="cap-title">请拖动滑块完成拼图</span>
+                    <button class="delete" @click="showCaptcha=false"></button>
+                </div>
+                <div class="cap-body">
+                    <div class="cap-img">
+                        <img src="https://picsum.photos/300/300" :style="{transform: `rotate(${currentAngle}deg)`}" alt="Captcha">
+                    </div>
+                    <input type="range" min="0" max="360" v-model="currentAngle" class="cap-slider">
+                    <button class="cap-confirm" @click="verifyCaptcha">验证</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                showCaptcha: false,
+                currentAngle: 0,
+                form: {
+                    username: '',
+                    password: ''
+                }
+            },
+            mounted() {
+                this.currentAngle = Math.floor(Math.random() * 360);
+            },
+            methods: {
+                verifyCaptcha() {
+                    setTimeout(() => {
+                        this.showCaptcha = false;
+                        alert('验证通过（原型）');
+                    }, 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

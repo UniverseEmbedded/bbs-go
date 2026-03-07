@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务中心原型 - BBS-GO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <style>
+        body { background: #f5f9fc; color: #2f3a4f; }
+        .top-nav { background: #fff; border-bottom: 1px solid #eef1f5; }
+        .main-wrap { max-width: 1280px; margin: 18px auto; padding: 0 12px; }
+        .panel { background: #fff; border-radius: 12px; border: 1px solid #eef1f5; }
+        .task-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .task-sub { color: #8192ab; font-size: 14px; }
+        .top-stats { display: flex; gap: 8px; }
+        .top-pill { font-size: 13px; border-radius: 999px; padding: 6px 10px; background: #f5f9ff; color: #4a5b78; border: 1px solid #e8edf7; }
+        .top-pill.done { background: #ecfff4; color: #18a058; border-color: #d7f5e5; }
+        .tabs-wrap { display: inline-flex; gap: 8px; margin-top: 14px; }
+        .tab-btn { border: 1px solid #e8edf7; background: #fff; color: #485a77; border-radius: 8px; padding: 6px 14px; font-size: 15px; cursor: pointer; }
+        .tab-btn.active { border-color: #2f7df6; color: #2f7df6; background: #f3f8ff; }
+        .task-grid { margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .task-card { border: 1px solid #edf1f6; border-radius: 12px; padding: 14px; background: #fff; }
+        .task-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .task-title { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 800; letter-spacing: .2px; color: #1f2b45; }
+        .task-desc { margin-top: 8px; color: #7b8ba5; font-size: 18px; line-height: 1.45; min-height: 54px; }
+        .status-tag { font-size: 16px; font-weight: 700; padding: 2px 10px; border-radius: 999px; border: 1px solid #dce5f4; color: #697a98; background: #f8fafc; }
+        .status-tag.done { color: #18a058; border-color: #baf1d2; background: #ecfff4; }
+        .reward-row { display: flex; gap: 8px; margin-top: 10px; }
+        .reward-chip { border-radius: 999px; padding: 4px 10px; background: #f7f8fb; color: #4d5c78; border: 1px solid #eaedf3; font-size: 15px; font-weight: 700; }
+        .reward-chip i { margin-right: 4px; font-size: 13px; }
+        .progress-meta { margin-top: 10px; display: flex; justify-content: space-between; font-size: 16px; color: #8294af; }
+        .bar { margin-top: 6px; width: 100%; height: 10px; background: #eef3f8; border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 100%; background: #2f7df6; border-radius: 999px; }
+        .period-meta { margin-top: 8px; color: #91a1b8; font-size: 15px; }
+        .side-card { background: #f5fffa; border: 1px solid #def4e8; border-radius: 12px; padding: 14px; }
+        .user-top { display: flex; align-items: center; gap: 10px; }
+        .avatar-dot { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1px solid #dce5f4; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #273553; }
+        .name-row { display: flex; align-items: center; gap: 8px; }
+        .name-row .name { font-size: 26px; font-weight: 800; color: #22314f; }
+        .lv { font-size: 14px; padding: 2px 6px; border-radius: 6px; color: #f69c28; background: #fff3dc; border: 1px solid #ffe2b6; font-weight: 700; }
+        .user-sub { margin-top: 2px; color: #7f8faa; font-size: 16px; }
+        .exp-line { margin-top: 12px; display: flex; justify-content: space-between; color: #667790; font-size: 15px; }
+        .side-stats { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .side-stats .cell { background: #fff; border: 1px solid #e7edf6; border-radius: 10px; text-align: center; padding: 8px 4px; }
+        .side-stats .label { font-size: 12px; color: #8da0bb; }
+        .side-stats .num { font-size: 18px; font-weight: 800; color: #2c3b57; margin-top: 2px; }
+        .checkin { margin-top: 12px; padding: 14px; border-radius: 12px; border: 1px solid #edf1f6; background: #fff; }
+        .checkin-top { display: flex; justify-content: space-between; align-items: center; }
+        .checkin-title { font-size: 28px; margin: 0; font-weight: 800; color: #1f2b45; }
+        .checkin-tag { font-size: 15px; border-radius: 999px; padding: 2px 8px; border: 1px solid #dce5f4; color: #7a8aa4; background: #f8fafc; }
+        .checkin-desc { margin-top: 8px; color: #7f8faa; font-size: 18px; }
+        .checkin-btn { margin-top: 12px; width: 100%; height: 44px; border: none; border-radius: 10px; background: #2f7df6; color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; }
+        .checkin-btn:disabled { background: #88b5fa; cursor: default; }
+        @media (max-width: 1180px) {
+            .task-grid { grid-template-columns: 1fr; }
+            .task-title { font-size: 24px; }
+            .task-desc { font-size: 16px; min-height: 46px; }
+            .checkin-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar top-nav">
+            <div class="main-wrap" style="width:100%; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <img src="https://bbs.bbs-go.com/images/logo.png" alt="BBS-GO" style="height:32px;">
+                    <a class="has-text-dark has-text-weight-semibold">话题</a>
+                    <a class="has-text-weight-semibold" style="color:#2f7df6;">任务</a>
+                    <a class="has-text-dark has-text-weight-semibold">BBS-GO</a>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <button class="button is-small" style="background:#2f7df6; color:#fff; border:none;">发布</button>
+                    <span style="font-weight:700; color:#2b3a56;">User123</span>
+                </div>
+            </div>
+        </nav>
+        <div class="main-wrap">
+            <div class="columns is-variable is-3">
+                <div class="column is-8">
+                    <div class="panel" style="padding:16px;">
+                        <div class="task-head">
+                            <div>
+                                <h1 class="title is-3" style="margin:0; color:#1f2b45;">任务中心</h1>
+                                <p class="task-sub">完成任务，赢取积分、经验与徽章奖励。</p>
+                            </div>
+                            <div class="top-stats">
+                                <div class="top-pill"><i class="fas fa-list-ul"></i> 任务总数 {{ taskTotal }}</div>
+                                <div class="top-pill done"><i class="fas fa-check-square"></i> 已完成 {{ doneTotal }}</div>
+                            </div>
+                        </div>
+                        <div class="tabs-wrap">
+                            <button class="tab-btn" :class="{active: activeTab==='daily'}" @click="activeTab='daily'">每日任务</button>
+                            <button class="tab-btn" :class="{active: activeTab==='newbie'}" @click="activeTab='newbie'">新手任务</button>
+                            <button class="tab-btn" :class="{active: activeTab==='achievement'}" @click="activeTab='achievement'">成就任务</button>
+                        </div>
+                        <div class="task-grid">
+                            <div class="task-card" v-for="task in tasks[activeTab]" :key="task.id">
+                                <div class="task-row">
+                                    <h3 class="task-title">{{ task.title }}</h3>
+                                    <span class="status-tag" :class="{done: task.status===1}">{{ task.status===1?'已完成':'待开始' }}</span>
+                                </div>
+                                <div class="task-desc">{{ task.description }}</div>
+                                <div class="reward-row">
+                                    <span class="reward-chip"><i class="fas fa-coins"></i> +{{ task.score }} 积分</span>
+                                    <span class="reward-chip"><i class="fas fa-bolt"></i> +{{ task.exp }} 经验</span>
+                                </div>
+                                <div class="progress-meta">
+                                    <span>已完成 {{ task.progress }}/{{ task.target }}</span>
+                                    <span>{{ Math.round(task.progress / task.target * 100) }}%</span>
+                                </div>
+                                <div class="bar">
+                                    <div class="bar-fill" :style="{width: (task.progress / task.target * 100) + '%'}"></div>
+                                </div>
+                                <div class="period-meta">本周期 0/1 次</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="side-card">
+                        <div class="user-top">
+                            <div class="avatar-dot">P</div>
+                            <div style="flex:1;">
+                                <div class="name-row">
+                                    <span class="name">User123</span>
+                                    <span class="lv">Lv.3</span>
+                                </div>
+                                <div class="user-sub">这家伙很懒，什么都没留下</div>
+                            </div>
+                        </div>
+                        <div class="exp-line">
+                            <span>经验值</span>
+                            <span>{{ user.exp }}/{{ user.nextLevelExp }}</span>
+                        </div>
+                        <div class="bar" style="height:8px; margin-top:6px;">
+                            <div class="bar-fill" :style="{width: (user.exp / user.nextLevelExp * 100) + '%'}"></div>
+                        </div>
+                        <div class="side-stats">
+                            <div class="cell"><div class="label">积分</div><div class="num">{{ user.score }}</div></div>
+                            <div class="cell"><div class="label">帖子</div><div class="num">{{ user.posts }}</div></div>
+                            <div class="cell"><div class="label">话题</div><div class="num">{{ user.topics }}</div></div>
+                            <div class="cell"><div class="label">评论</div><div class="num">{{ user.comments }}</div></div>
+                        </div>
+                    </div>
+                    <div class="checkin">
+                        <div class="checkin-top">
+                            <h3 class="checkin-title">每日签到</h3>
+                            <span class="checkin-tag">{{ checkin.checked ? '已签到' : '未签到' }}</span>
+                        </div>
+                        <div class="checkin-desc">已连续签到 {{ checkin.streak }} 天，持续获得积分。</div>
+                        <button class="checkin-btn" :disabled="checkin.checked" @click="doCheckin">
+                            <i class="fas fa-calendar-check"></i> {{ checkin.checked ? '今日已签到' : '立即签到' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                activeTab: 'daily',
+                checkin: { checked: false, streak: 5 },
+                user: { exp: 1250, nextLevelExp: 2000, score: 4176, posts: 12, topics: 5, comments: 45 },
+                tasks: {
+                    daily: [
+                        { id: 1, title: '每日登录', description: '今日访问并登录站点即可完成。', score: 2, exp: 5, status: 1, progress: 1, target: 1 },
+                        { id: 2, title: '每日签到', description: '完成今日签到，持续你的签到 streak，保持高参与感。', score: 5, exp: 10, status: 0, progress: 0, target: 1 },
+                        { id: 3, title: '发 1 篇帖子', description: '今日发布一篇新主题，可以是提问、一个想法或一次分享。', score: 8, exp: 15, status: 0, progress: 0, target: 1 },
+                        { id: 4, title: '评论 3 次', description: '今日在帖子下至少发表 3 条评论，你的回复与讨论会让社区更有活力。', score: 6, exp: 12, status: 0, progress: 1, target: 3 },
+                        { id: 5, title: '点赞 10 次', description: '今日为你喜欢的帖子或评论点赞 10 次。', score: 4, exp: 8, status: 0, progress: 2, target: 10 },
+                        { id: 6, title: '收藏 2 次', description: '今日将 2 篇帖子或主题加入收藏，整理你的阅读清单。', score: 3, exp: 6, status: 0, progress: 0, target: 2 }
+                    ],
+                    newbie: [
+                        { id: 11, title: '完善个人资料', description: '设置头像、昵称和个人简介。', score: 20, exp: 50, status: 0, progress: 0, target: 1 },
+                        { id: 12, title: '绑定邮箱', description: '绑定并验证邮箱地址。', score: 30, exp: 60, status: 1, progress: 1, target: 1 }
+                    ],
+                    achievement: [
+                        { id: 21, title: '初来乍到', description: '注册满 7 天。', score: 50, exp: 100, status: 1, progress: 1, target: 1 },
+                        { id: 22, title: '内容创作者', description: '累计发布 100 篇帖子。', score: 100, exp: 200, status: 0, progress: 12, target: 100 }
+                    ]
+                }
+            },
+            computed: {
+                taskTotal() {
+                    return this.tasks[this.activeTab].length;
+                },
+                doneTotal() {
+                    return this.tasks[this.activeTab].filter(item => item.status === 1).length;
+                }
+            },
+            methods: {
+                doCheckin() {
+                    this.checkin.checked = true;
+                    this.checkin.streak += 1;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

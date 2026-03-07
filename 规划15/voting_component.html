@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投票组件原型 - BBS-GO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <style>
+        body { background-color: #f5f7fa; padding: 20px; }
+        .topic-content { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 12px 0 rgba(0,0,0,.1); max-width: 800px; margin: 0 auto; }
+        .vote-box { background-color: #f8f9fa; border: 1px solid #ebeef5; border-radius: 6px; padding: 20px; margin-top: 20px; }
+        .vote-title { font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; }
+        .vote-type-tag { font-size: 12px; background: #ecf5ff; color: #409eff; padding: 2px 6px; border-radius: 4px; margin-right: 8px; border: 1px solid #d9ecff; }
+        .vote-option { margin-bottom: 10px; padding: 10px; border-radius: 4px; cursor: pointer; transition: background .2s; border: 1px solid transparent; }
+        .vote-option:hover { background-color: #f0f2f5; }
+        .vote-option.is-selected { background-color: #ecf5ff; border-color: #409eff; }
+        .vote-progress-container { margin-bottom: 15px; }
+        .vote-progress-bar { height: 20px; background-color: #ebeef5; border-radius: 10px; overflow: hidden; position: relative; }
+        .vote-progress-fill { height: 100%; background-color: #409eff; border-radius: 10px; transition: width .5s ease; }
+        .vote-progress-fill.is-winner { background-color: #67c23a; }
+        .vote-text { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; }
+        .vote-meta { font-size: 12px; color: #909399; margin-top: 15px; border-top: 1px solid #ebeef5; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="topic-content">
+            <h1 class="title is-4">BBS-GO计划新增PostgreSQL，是否需要？</h1>
+            <div class="content">
+                <p>大家讨论一下，是否需要支持 PostgreSQL 数据库？目前的 MySQL 支持已经很完善了，但是也有用户提出想用 PG。</p>
+            </div>
+
+            <!-- 投票组件 -->
+            <div class="vote-box">
+                <div class="vote-title">
+                    <span class="vote-type-tag">{{ vote.type === 'single' ? '单选' : '多选' }}</span>
+                    <span>{{ vote.title }}</span>
+                </div>
+
+                <!-- 未投票状态 -->
+                <div v-if="!hasVoted && !isExpired">
+                    <div class="vote-options">
+                        <div class="vote-option" 
+                             v-for="option in vote.options" 
+                             :key="option.id"
+                             :class="{'is-selected': selectedOptions.includes(option.id)}"
+                             @click="selectOption(option.id)">
+                            <label class="checkbox" v-if="vote.type === 'multiple'">
+                                <input type="checkbox" :checked="selectedOptions.includes(option.id)">
+                                {{ option.content }}
+                            </label>
+                            <label class="radio" v-else>
+                                <input type="radio" :checked="selectedOptions.includes(option.id)">
+                                {{ option.content }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button class="button is-primary" :disabled="selectedOptions.length === 0" @click="submitVote">
+                            投票
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 已投票或已过期状态 -->
+                <div v-else>
+                    <div class="vote-result" v-for="option in vote.options" :key="option.id">
+                        <div class="vote-text">
+                            <span>
+                                {{ option.content }}
+                                <span v-if="option.voted" class="tag is-primary is-light is-rounded ml-2" style="height: 1.5em;">我选的</span>
+                            </span>
+                            <span>{{ option.voteCount }}票 ({{ option.percent }}%)</span>
+                        </div>
+                        <div class="vote-progress-container">
+                            <div class="vote-progress-bar">
+                                <div class="vote-progress-fill" 
+                                     :class="{'is-winner': isWinner(option)}"
+                                     :style="{width: option.percent + '%'}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4" v-if="!hasVoted && isExpired">
+                        <button class="button is-static">投票已截止</button>
+                    </div>
+                </div>
+
+                <div class="vote-meta">
+                    <span>{{ vote.voteCount }} 人参与</span>
+                    <span class="mx-2">·</span>
+                    <span>截止时间: {{ vote.expiredTime }}</span>
+                    <span class="is-pulled-right" v-if="isExpired">已截止</span>
+                    <span class="is-pulled-right has-text-success" v-else>进行中</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                hasVoted: false,
+                isExpired: false, // 切换此变量查看过期/投票后状态
+                selectedOptions: [],
+                vote: {
+                    id: 1,
+                    type: 'single', // single or multiple
+                    title: 'BBS-GO计划新增PostgreSQL，是否需要？',
+                    voteCount: 21,
+                    expiredTime: '2026-03-24 13:43:00',
+                    options: [
+                        { id: 1, content: '需要', voteCount: 7, percent: 33.3, voted: false },
+                        { id: 2, content: '不需要', voteCount: 14, percent: 66.7, voted: false }
+                    ]
+                }
+            },
+            methods: {
+                selectOption(id) {
+                    if (this.vote.type === 'single') {
+                        this.selectedOptions = [id];
+                    } else {
+                        const index = this.selectedOptions.indexOf(id);
+                        if (index > -1) {
+                            this.selectedOptions.splice(index, 1);
+                        } else {
+                            this.selectedOptions.push(id);
+                        }
+                    }
+                },
+                submitVote() {
+                    if (this.selectedOptions.length === 0) return;
+                    
+                    // 模拟提交
+                    this.hasVoted = true;
+                    // 更新本地数据模拟结果变化
+                    this.vote.voteCount++;
+                    this.vote.options.forEach(opt => {
+                        if (this.selectedOptions.includes(opt.id)) {
+                            opt.voteCount++;
+                            opt.voted = true;
+                        }
+                    });
+                    // 重新计算百分比
+                    const total = this.vote.voteCount;
+                    this.vote.options.forEach(opt => {
+                        opt.percent = Math.round((opt.voteCount / total) * 100 * 10) / 10;
+                    });
+                },
+                isWinner(option) {
+                    // 简单的判断：票数最多的高亮
+                    const max = Math.max(...this.vote.options.map(o => o.voteCount));
+                    return option.voteCount === max && max > 0;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
