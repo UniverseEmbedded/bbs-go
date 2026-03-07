@@ -43,5 +43,41 @@ export const useUserStore = defineStore("user", {
         redirect,
       };
     },
+    async signinSms(body) {
+      const { user, token, redirect } = await loginBySms(body);
+      this.user = user;
+      return {
+        user,
+        token,
+        redirect,
+      };
+    },
+    async signinWx(body) {
+      const { user, token, redirect } = await submitWxLogin(body);
+      this.user = user;
+      return {
+        user,
+        token,
+        redirect,
+      };
+    },
+    async signinGoogle(body) {
+      const { user, token, redirect } = await submitGoogleLogin(body);
+      this.user = user;
+      return {
+        user,
+        token,
+        redirect,
+      };
+    },
+    async signinGoogleOneTap(body) {
+      const { user, token, redirect } = await googleOneTap(body);
+      this.user = user;
+      return {
+        user,
+        token,
+        redirect,
+      };
+    },
   },
 });

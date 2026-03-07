@@ -9,6 +9,7 @@
     "dev": "nuxt dev --dotenv .env.local",
     "generate": "NUXT_SSR=false nuxt generate --dotenv .env.production",
     "preview": "nuxt preview --dotenv .env.production",
+    "test:stage2": "node --test tests/stage2-adaptation.test.mjs",
     "postinstall": "nuxt prepare",
     "packages:dev": "pnpm -r --filter \"./packages/**\" --parallel dev",
     "packages:build": "pnpm -r --filter \"./packages/**\" build"

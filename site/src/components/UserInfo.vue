@@ -31,6 +31,21 @@
         </li>
       </ul>
     </div>
+    <div class="badge-info">
+      <div class="badge-head">
+        <span>{{ $t("pages.badge.myBadges") }}</span>
+        <nuxt-link :to="`/badges?userId=${user.id}`">{{ $t("pages.badge.viewAll") }}</nuxt-link>
+      </div>
+      <div class="badge-grid">
+        <img
+          v-for="badge in ownedBadges.slice(0, 4)"
+          :key="badge.id"
+          :src="resolveBadgeIcon(badge)"
+          :alt="badge.title || badge.name"
+        />
+        <div v-if="!ownedBadges.length" class="empty">{{ $t("pages.badge.noBadges") }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,6 +56,17 @@ const props = defineProps({
     required: true,
   },
 });
+
+const badges = ref([])
+const ownedBadges = computed(() => badges.value.filter((item) => item.owned))
+
+onMounted(async () => {
+  try {
+    badges.value = await fetchBadges(props.user.id)
+  } catch (e) {
+    badges.value = []
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -90,6 +116,36 @@ const props = defineProps({
           font-weight: 400;
           color: var(--text-color3);
         }
+      }
+    }
+  }
+
+  .badge-info {
+    border-top: 1px solid var(--border-color4);
+    padding: 10px;
+    .badge-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 8px;
+      a {
+        color: var(--text-link-color);
+      }
+    }
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      min-height: 32px;
+      img {
+        width: 32px;
+        height: 32px;
+      }
+      .empty {
+        grid-column: span 4;
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-color3);
       }
     }
   }

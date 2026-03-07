@@ -91,6 +91,12 @@
               </div>
             </div>
 
+            <vote-vote-panel
+              v-if="topic.vote"
+              :vote="topic.vote"
+              @updated="topic.vote = $event"
+            />
+
             <!-- 节点、标签 -->
             <div class="topic-tags">
               <nuxt-link

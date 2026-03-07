@@ -77,6 +77,44 @@
             </div>
           </div>
         </div>
+
+        <div class="settings-item">
+          <div class="settings-item-title">
+            {{ $t("user.profile.account.wechat") }}
+          </div>
+          <div class="settings-item-input">
+            <div class="input-value">
+              <span v-if="wxBindInfo?.bind">
+                {{ wxBindInfo.nickname || $t("user.profile.account.wechatBound") }}
+              </span>
+              <span v-else>{{ $t("user.profile.account.wechatNotBound") }}</span>
+            </div>
+            <div class="action-box">
+              <a v-if="wxBindInfo?.bind" @click="doWxUnbind">{{
+                $t("user.profile.account.unbind")
+              }}</a>
+              <a v-else @click="doWxBind">{{ $t("user.profile.account.bind") }}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-title">Google</div>
+          <div class="settings-item-input">
+            <div class="input-value">
+              <span v-if="googleBindInfo?.bind">
+                {{ googleBindInfo.nickname || $t("user.profile.account.wechatBound") }}
+              </span>
+              <span v-else>{{ $t("user.profile.account.wechatNotBound") }}</span>
+            </div>
+            <div class="action-box">
+              <a v-if="googleBindInfo?.bind" @click="doGoogleUnbind">{{
+                $t("user.profile.account.unbind")
+              }}</a>
+              <a v-else @click="doGoogleBind">{{ $t("user.profile.account.bind") }}</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -87,7 +125,6 @@
       ref="updatePasswordDialog"
       @success="userRefresh"
     />
-    <AccountWxBindDialog ref="wxBindDialog" />
   </div>
 </template>
 
@@ -111,12 +148,21 @@ const setUsernameDialog = ref(null);
 const setEmailDialog = ref(null);
 const setPasswordDialog = ref(null);
 const updatePasswordDialog = ref(null);
-const wxBindDialog = ref(null);
+const wxBindInfo = ref({ bind: false });
+const googleBindInfo = ref({ bind: false });
 const showUsernameDialog = () => setUsernameDialog.value.show();
 const showEmailDialog = () => setEmailDialog.value.show();
 const showSetPasswordDialog = () => setPasswordDialog.value.show();
 const showUpdatePasswordDialog = () => updatePasswordDialog.value.show();
-const showWxBindDialog = () => wxBindDialog.value.show();
+
+const loadBindInfo = async () => {
+  try {
+    wxBindInfo.value = await fetchWxBindInfo();
+    googleBindInfo.value = await fetchGoogleBindInfo();
+  } catch (e) {
+    useCatchError(e);
+  }
+};
 
 async function requestEmailVerify() {
   const loading = useLoading();
@@ -131,6 +177,69 @@ async function requestEmailVerify() {
     loading.close();
   }
 }
+
+const doWxBind = async () => {
+  try {
+    const config = await fetchWxLoginConfig({
+      bind: true,
+      redirect: "/user/profile/account",
+    });
+    const query = new URLSearchParams({
+      appid: config.appid,
+      redirect_uri: config.redirect_uri,
+      response_type: "code",
+      scope: config.scope,
+      state: config.state,
+    });
+    location.href = `https://open.weixin.qq.com/connect/qrconnect?${query.toString()}#wechat_redirect`;
+  } catch (e) {
+    useCatchError(e);
+  }
+};
+
+const doGoogleBind = async () => {
+  try {
+    const config = await fetchGoogleLoginConfig({
+      bind: true,
+      redirect: "/user/profile/account",
+    });
+    if (config.authUrl) {
+      location.href = config.authUrl;
+      return;
+    }
+    useMsgError(t("user.signin.googleConfigError"));
+  } catch (e) {
+    useCatchError(e);
+  }
+};
+
+const doWxUnbind = async () => {
+  if (!confirm(t("user.profile.account.confirmUnbind"))) {
+    return;
+  }
+  try {
+    await wxUnbind();
+    useMsgSuccess(t("user.profile.account.unbindSuccess"));
+    await loadBindInfo();
+  } catch (e) {
+    useCatchError(e);
+  }
+};
+
+const doGoogleUnbind = async () => {
+  if (!confirm(t("user.profile.account.confirmUnbind"))) {
+    return;
+  }
+  try {
+    await googleUnbind();
+    useMsgSuccess(t("user.profile.account.unbindSuccess"));
+    await loadBindInfo();
+  } catch (e) {
+    useCatchError(e);
+  }
+};
+
+await loadBindInfo();
 </script>
 <style lang="scss" scoped>
 .field {

@@ -146,3 +146,18 @@
 | 登录扩展 | 密码登录不回退；短信登录可用；微信与Google登录入口可触发并处理返回 |
 | 账号绑定 | 微信/Google绑定状态可查询；可绑定；可解绑 |
 | 勋章墙 | 徽章数据可加载；拥有/佩戴状态可区分展示；空数据有兜底状态 |
+
+---
+
+## 八、实施状态（2026-03-07）
+
+| 模块 | 实施状态 | 前端入口 |
+|------|----------|----------|
+| 任务中心 | 已实现 | /tasks |
+| 投票详情 | 已实现 | /topic/:id（内嵌投票组件），/votes/:id |
+| 短信登录 | 已实现 | /user/signin（短信Tab） |
+| 微信登录 | 已实现 | /user/signin + /user/signin/callback/weixin |
+| Google登录 | 已实现 | /user/signin + /user/signin/callback/google |
+| 微信绑定 | 已实现 | /user/profile/account + /user/signin/callback/weixin_bind |
+| Google绑定 | 已实现 | /user/profile/account + /user/signin/callback/google_bind |
+| 勋章墙 | 已实现 | /badges（使用 /res/images/badges/*.svg） |
