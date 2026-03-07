@@ -1,0 +1,1436 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>设置页 UI 原型（独立面板）</title>
+    <style>
+      :root {
+        --bg: #0b0d12;
+        --card: rgba(255, 255, 255, 0.92);
+        --panel: rgba(255, 255, 255, 0.78);
+        --line: rgba(0, 0, 0, 0.16);
+        --muted: rgba(0, 0, 0, 0.6);
+        --danger: #b42318;
+        --ok: #027a48;
+        --warn: #b54708;
+        --shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+        --radius: 16px;
+        --radius2: 12px;
+        --gap: 12px;
+        --settings-panel-h: 760px;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft Yahei", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--sans);
+        background: radial-gradient(1200px 700px at 50% 35%, rgba(71, 84, 103, 0.45), rgba(11, 13, 18, 0.9)),
+          linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(236, 72, 153, 0.12));
+        color: #111827;
+      }
+      .overlay {
+        min-height: 100vh;
+        padding: 18px 12px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+      }
+      .card {
+        width: min(1080px, calc(100% - 24px));
+        height: var(--settings-panel-h);
+        overflow: hidden;
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .header-left {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        min-width: 0;
+      }
+      .title {
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        font-size: 12px;
+        font-weight: 800;
+        color: rgba(0, 0, 0, 0.75);
+        white-space: nowrap;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.28);
+      }
+      .dot.ok {
+        background: var(--ok);
+      }
+      .dot.warn {
+        background: var(--warn);
+      }
+      .dot.bad {
+        background: var(--danger);
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid rgba(0, 0, 0, 0.22);
+        background: rgba(255, 255, 255, 0.85);
+        color: #111827;
+        font-size: 14px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: filter 120ms ease, transform 120ms ease, background 120ms ease;
+        user-select: none;
+        text-align: center;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn:hover {
+        filter: brightness(0.96);
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn.primary {
+        font-weight: 900;
+        background: rgba(17, 24, 39, 0.92);
+        color: #fff;
+        border-color: rgba(17, 24, 39, 0.9);
+      }
+      .btn.danger {
+        font-weight: 900;
+        background: rgba(180, 35, 24, 0.1);
+        border-color: rgba(180, 35, 24, 0.35);
+        color: var(--danger);
+      }
+      .btn.ghost {
+        background: transparent;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--gap);
+        overflow: hidden;
+        flex: 1;
+        min-height: 0;
+      }
+      @media (min-width: 980px) {
+        .layout {
+          grid-template-columns: 0.34fr 0.66fr;
+        }
+      }
+      .sidebar {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius2);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 0;
+      }
+      .content {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius2);
+        padding: 12px;
+        min-height: 0;
+        overflow: auto;
+      }
+      .sidebar-top {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .search {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.22);
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+        outline: none;
+      }
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow: auto;
+        padding-right: 2px;
+      }
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.22);
+        background: rgba(255, 255, 255, 0.75);
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        user-select: none;
+        text-align: left;
+      }
+      .nav-btn[aria-selected="true"] {
+        background: rgba(0, 0, 0, 0.08);
+        border-color: rgba(0, 0, 0, 0.5);
+      }
+      .nav-meta {
+        font-size: 11px;
+        font-weight: 900;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        background: rgba(255, 255, 255, 0.7);
+        color: rgba(0, 0, 0, 0.7);
+        white-space: nowrap;
+      }
+      .panel {
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.84);
+        padding: 12px;
+      }
+      .panel h2 {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        font-weight: 950;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 900px) {
+        .grid.two {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .row.spread {
+        justify-content: space-between;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 200px;
+        flex: 1;
+      }
+      label {
+        font-size: 12px;
+        font-weight: 900;
+        color: rgba(0, 0, 0, 0.7);
+      }
+      select,
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.22);
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+        outline: none;
+      }
+      input[type="text"].mono {
+        font-family: var(--mono);
+        font-size: 13px;
+      }
+      .hint {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.62);
+        line-height: 1.35;
+      }
+      .hint.bad {
+        color: var(--danger);
+        font-weight: 900;
+      }
+      .hint.ok {
+        color: var(--ok);
+        font-weight: 900;
+      }
+      .switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.8);
+        user-select: none;
+        cursor: pointer;
+      }
+      .switch input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+      }
+      .range {
+        display: grid;
+        grid-template-columns: 1fr 92px;
+        gap: 10px;
+        align-items: center;
+      }
+      .range input[type="range"] {
+        width: 100%;
+      }
+      .table {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .item {
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.82);
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .item[data-selected="true"] {
+        border-color: rgba(0, 0, 0, 0.55);
+        background: rgba(0, 0, 0, 0.06);
+      }
+      .item-main {
+        min-width: 0;
+      }
+      .item-title {
+        font-weight: 950;
+        font-size: 13px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .sub {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.65);
+        margin-top: 4px;
+        font-family: var(--mono);
+        word-break: break-all;
+      }
+      .item-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 18px;
+        background: rgba(17, 24, 39, 0.92);
+        color: #fff;
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 900;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+        display: none;
+        max-width: min(680px, calc(100% - 24px));
+        text-align: center;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 12px;
+      }
+      .modal-card {
+        width: min(520px, calc(100% - 24px));
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        padding: 14px;
+        box-shadow: var(--shadow);
+      }
+      .modal-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 15px;
+        font-weight: 950;
+      }
+      .hr {
+        height: 1px;
+        background: rgba(0, 0, 0, 0.14);
+        margin: 10px 0;
+      }
+      .kbd {
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        background: rgba(255, 255, 255, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay">
+      <div class="card" role="dialog" aria-label="设置页 UI 原型（独立面板）">
+        <div class="header">
+          <div class="header-left">
+            <div class="title">设置</div>
+            <div id="persistence-pill" class="status-pill" aria-label="保存状态">
+              <span id="persistence-dot" class="dot ok"></span>
+              <span id="persistence-text">已保存</span>
+            </div>
+            <div id="modified-pill" class="status-pill" aria-label="默认值差异">
+              <span id="modified-dot" class="dot ok"></span>
+              <span id="modified-text">默认</span>
+            </div>
+          </div>
+          <div class="header-right">
+            <button id="btn-reset-all" class="btn danger" type="button">恢复默认</button>
+            <button id="btn-close" class="btn ghost" type="button">关闭</button>
+          </div>
+        </div>
+
+        <div class="layout">
+          <div class="sidebar">
+            <div class="sidebar-top">
+              <input id="search" class="search" type="text" placeholder="搜索设置（原型）" />
+              <div class="row" style="justify-content: space-between">
+                <div class="hint" style="margin: 0">平台：<span id="platform" class="kbd"></span></div>
+                <div class="hint" style="margin: 0">实例：<span id="instance" class="kbd"></span></div>
+              </div>
+            </div>
+            <div id="nav" class="nav" role="tablist" aria-label="设置分类"></div>
+          </div>
+
+          <div class="content">
+            <div id="page" role="tabpanel" aria-label="设置内容"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="modal" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <h3 id="modal-title"></h3>
+        <div id="modal-body"></div>
+        <div class="hr"></div>
+        <div class="row" style="justify-content: flex-end">
+          <button id="modal-cancel" class="btn" type="button">取消</button>
+          <button id="modal-ok" class="btn primary" type="button">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+
+      const deepClone = (v) => JSON.parse(JSON.stringify(v));
+      const deepEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+      const DEFAULT_SETTINGS = {
+        general: { locale: "zh-CN", themeMode: "system", accent: "#7c3aed" },
+        audio: { muted: false, master: 1, bgm: 0.8, sfx: 1, ui: 1 },
+        network: { region: "auto", mode: "auto", latencyCompensation: true, inputPrediction: true },
+        input: { aimAssist: true, gamepadEnabled: true, mappingPreset: "default" },
+        quality: { preset: "auto", shadows: true, postProcess: true, particleDensity: 1, fpsCap: 120, vsync: true },
+        accessibility: { reducedMotion: false, highContrast: false, colorBlind: "none", uiScale: 1.0 },
+        data: { exportFormat: "zip", includeLogs: true, includeReplays: true, includeScreenshots: false },
+      };
+
+      const state = {
+        platform: "tauri",
+        instance: "default",
+        ui: { cat: "general", query: "" },
+        persistence: { status: "saved", lastSavedAt: Date.now(), error: "" },
+        derived: { modifiedFromDefault: false, modifiedCategories: {} },
+        data: { ...deepClone(DEFAULT_SETTINGS), about: { build: "dev", settingsSchemaVersion: 1, protocolVersion: 2 } },
+      };
+
+      const categories = [
+        { id: "general", title: "通用", meta: "语言/主题" },
+        { id: "audio", title: "声音", meta: "音量/静音" },
+        { id: "network", title: "联机", meta: "模式/预测" },
+        { id: "input", title: "控制", meta: "键位/手柄" },
+        { id: "quality", title: "图形", meta: "质量/性能" },
+        { id: "accessibility", title: "无障碍", meta: "对比/色盲" },
+        { id: "data", title: "数据", meta: "导入/导出" },
+        { id: "about", title: "关于", meta: "版本/协议" },
+      ];
+
+      const toastEl = $("toast");
+      let toastTimer = null;
+      const showToast = (text) => {
+        toastEl.textContent = text;
+        toastEl.style.display = "block";
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => (toastEl.style.display = "none"), 1600);
+      };
+
+      const modalEl = $("modal");
+      const modalTitleEl = $("modal-title");
+      const modalBodyEl = $("modal-body");
+      const modalCancelEl = $("modal-cancel");
+      const modalOkEl = $("modal-ok");
+      let modalResolve = null;
+      const showModal = (title, body, okText = "确定") =>
+        new Promise((resolve) => {
+          modalTitleEl.textContent = title;
+          modalBodyEl.innerHTML = "";
+          modalBodyEl.appendChild(body);
+          modalOkEl.textContent = okText;
+          modalEl.style.display = "flex";
+          modalResolve = resolve;
+        });
+      const closeModal = (result) => {
+        modalEl.style.display = "none";
+        if (modalResolve) modalResolve(result);
+        modalResolve = null;
+      };
+      modalCancelEl.addEventListener("click", () => closeModal(false));
+      modalOkEl.addEventListener("click", () => closeModal(true));
+      modalEl.addEventListener("click", (e) => {
+        if (e.target === modalEl) closeModal(false);
+      });
+
+      const persistenceDot = $("persistence-dot");
+      const persistenceText = $("persistence-text");
+      const modifiedDot = $("modified-dot");
+      const modifiedText = $("modified-text");
+
+      const setPersistenceStatus = (status, err = "") => {
+        state.persistence.status = status;
+        state.persistence.error = err;
+        persistenceDot.className = "dot";
+        if (status === "saved") persistenceDot.classList.add("ok");
+        if (status === "saving") persistenceDot.classList.add("warn");
+        if (status === "error") persistenceDot.classList.add("bad");
+        persistenceText.textContent = status === "saved" ? "已保存" : status === "saving" ? "保存中" : "保存失败";
+      };
+
+      const recomputeDerived = () => {
+        const cats = /** @type {const} */ (["general", "audio", "network", "input", "quality", "accessibility", "data"]);
+        const modifiedCategories = {};
+        for (const c of cats) {
+          modifiedCategories[c] = !deepEqual(state.data[c], DEFAULT_SETTINGS[c]);
+        }
+        const modifiedFromDefault = Object.values(modifiedCategories).some(Boolean);
+        state.derived.modifiedCategories = modifiedCategories;
+        state.derived.modifiedFromDefault = modifiedFromDefault;
+        modifiedDot.className = "dot";
+        if (modifiedFromDefault) modifiedDot.classList.add("warn");
+        else modifiedDot.classList.add("ok");
+        modifiedText.textContent = modifiedFromDefault ? "已修改默认值" : "默认";
+      };
+
+      let saveTimer = null;
+      const scheduleAutoSave = () => {
+        setPersistenceStatus("saving");
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          state.persistence.lastSavedAt = Date.now();
+          setPersistenceStatus("saved");
+        }, 250);
+      };
+
+      const el = {
+        nav: $("nav"),
+        page: $("page"),
+        search: $("search"),
+        platform: $("platform"),
+        instance: $("instance"),
+        btnResetAll: $("btn-reset-all"),
+        btnClose: $("btn-close"),
+      };
+
+      const normalize = (s) => (s || "").toLowerCase().trim();
+      const matchQuery = (hay, q) => {
+        const nq = normalize(q);
+        if (!nq) return true;
+        return normalize(hay).includes(nq);
+      };
+
+      const make = {
+        panel: (title) => {
+          const p = document.createElement("div");
+          p.className = "panel";
+          const h2 = document.createElement("h2");
+          h2.textContent = title;
+          p.appendChild(h2);
+          return { el: p, h2 };
+        },
+        field: (labelText) => {
+          const f = document.createElement("div");
+          f.className = "field";
+          const l = document.createElement("label");
+          l.textContent = labelText;
+          f.appendChild(l);
+          return { el: f, label: l };
+        },
+        hint: (text, cls = "") => {
+          const h = document.createElement("div");
+          h.className = "hint" + (cls ? " " + cls : "");
+          h.textContent = text;
+          return h;
+        },
+        select: (options) => {
+          const s = document.createElement("select");
+          for (const o of options) {
+            const opt = document.createElement("option");
+            opt.value = o.value;
+            opt.textContent = o.label;
+            if (o.disabled) opt.disabled = true;
+            s.appendChild(opt);
+          }
+          return s;
+        },
+        switch: (text) => {
+          const wrap = document.createElement("label");
+          wrap.className = "switch";
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          const span = document.createElement("span");
+          span.textContent = text;
+          wrap.appendChild(input);
+          wrap.appendChild(span);
+          return { wrap, input };
+        },
+        range: (min, max, step) => {
+          const w = document.createElement("div");
+          w.className = "range";
+          const r = document.createElement("input");
+          r.type = "range";
+          r.min = String(min);
+          r.max = String(max);
+          r.step = String(step);
+          const n = document.createElement("input");
+          n.type = "number";
+          n.min = String(min);
+          n.max = String(max);
+          n.step = String(step);
+          w.appendChild(r);
+          w.appendChild(n);
+          return { wrap: w, range: r, num: n };
+        },
+        row: (spread = false) => {
+          const r = document.createElement("div");
+          r.className = "row" + (spread ? " spread" : "");
+          return r;
+        },
+        kbd: (t) => {
+          const k = document.createElement("span");
+          k.className = "kbd";
+          k.textContent = t;
+          return k;
+        },
+      };
+
+      const updateFrom = (path, value) => {
+        const parts = path.split(".");
+        let cur = state.data;
+        for (let i = 0; i < parts.length - 1; i++) cur = cur[parts[i]];
+        cur[parts[parts.length - 1]] = value;
+        recomputeDerived();
+        scheduleAutoSave();
+      };
+
+      const renderNav = () => {
+        el.nav.innerHTML = "";
+        for (const c of categories) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "nav-btn";
+          btn.setAttribute("role", "tab");
+          btn.setAttribute("aria-selected", String(state.ui.cat === c.id));
+          const left = document.createElement("div");
+          left.textContent = c.title;
+          const meta = document.createElement("div");
+          meta.className = "nav-meta";
+          meta.textContent = c.meta;
+          btn.appendChild(left);
+          btn.appendChild(meta);
+          btn.addEventListener("click", () => {
+            state.ui.cat = c.id;
+            render();
+          });
+          if (!matchQuery(c.title + " " + c.meta, state.ui.query)) {
+            btn.style.display = "none";
+          }
+          el.nav.appendChild(btn);
+        }
+      };
+
+      const renderPage = () => {
+        el.page.innerHTML = "";
+
+        const q = state.ui.query;
+        const blocks = [];
+        const push = (label, node) => {
+          if (matchQuery(label, q)) blocks.push(node);
+        };
+
+        if (state.ui.cat === "general") {
+          const p = make.panel("通用");
+          const g = document.createElement("div");
+          g.className = "grid two";
+
+          const locale = make.field("语言");
+          const localeSel = make.select([
+            { value: "zh-CN", label: "简体中文" },
+            { value: "en", label: "English" },
+          ]);
+          localeSel.value = state.data.general.locale;
+          localeSel.addEventListener("change", () => updateFrom("general.locale", localeSel.value));
+          locale.el.appendChild(localeSel);
+          locale.el.appendChild(make.hint("切换语言后，UI 文案会立即更新。"));
+          push("语言 locale 简体中文 English", locale.el);
+
+          const themeMode = make.field("主题模式");
+          const themeSel = make.select([
+            { value: "system", label: "跟随系统" },
+            { value: "light", label: "浅色" },
+            { value: "dark", label: "深色" },
+          ]);
+          themeSel.value = state.data.general.themeMode;
+          themeSel.addEventListener("change", () => updateFrom("general.themeMode", themeSel.value));
+          themeMode.el.appendChild(themeSel);
+          themeMode.el.appendChild(make.hint("原型：实际项目里应影响 DOM / 渲染器 token。"));
+          push("主题模式 system light dark", themeMode.el);
+
+          const accent = make.field("强调色");
+          const color = document.createElement("input");
+          color.type = "color";
+          color.value = state.data.general.accent;
+          color.addEventListener("change", () => updateFrom("general.accent", color.value));
+          accent.el.appendChild(color);
+          accent.el.appendChild(make.hint("原型：用于按钮/高亮/危险态对比。"));
+          push("强调色 accent color", accent.el);
+
+          const ui = make.field("UI 缩放");
+          const uiScale = make.range(0.75, 1.5, 0.05);
+          uiScale.range.value = String(state.data.accessibility.uiScale);
+          uiScale.num.value = String(state.data.accessibility.uiScale);
+          const sync = (v) => {
+            const s = String(v);
+            if (document.activeElement !== uiScale.range) uiScale.range.value = s;
+            if (document.activeElement !== uiScale.num) uiScale.num.value = s;
+          };
+          uiScale.range.addEventListener("input", () => {
+            const v = Number(uiScale.range.value);
+            if (!Number.isFinite(v)) return;
+            sync(v);
+            updateFrom("accessibility.uiScale", v);
+          });
+          uiScale.num.addEventListener("input", () => {
+            const v = Number(uiScale.num.value);
+            if (!Number.isFinite(v)) return;
+            sync(v);
+            updateFrom("accessibility.uiScale", v);
+          });
+          ui.el.appendChild(uiScale.wrap);
+          ui.el.appendChild(make.hint("优先级很高：解决不同分辨率与 TV/掌机场景。"));
+          push("UI 缩放 uiscale", ui.el);
+
+          g.appendChild(locale.el);
+          g.appendChild(themeMode.el);
+          g.appendChild(accent.el);
+          g.appendChild(ui.el);
+          p.el.appendChild(g);
+
+          const actions = make.row(true);
+          actions.appendChild(make.hint("面板级重置：只重置该分类。"));
+          const btn = document.createElement("button");
+          btn.className = "btn danger";
+          btn.type = "button";
+          btn.textContent = "重置“通用”";
+          btn.disabled = !(state.derived.modifiedCategories.general || state.derived.modifiedCategories.accessibility);
+          btn.addEventListener("click", async () => {
+            const body = document.createElement("div");
+            body.appendChild(make.hint("将重置：语言、主题模式、强调色、UI 缩放。"));
+            const ok = await showModal("确认重置", body, "重置");
+            if (!ok) return;
+              Object.assign(state.data.general, deepClone(DEFAULT_SETTINGS.general));
+              state.data.accessibility.uiScale = DEFAULT_SETTINGS.accessibility.uiScale;
+              recomputeDerived();
+              scheduleAutoSave();
+            render();
+            showToast("已重置“通用”（原型）");
+          });
+          actions.appendChild(btn);
+          p.el.appendChild(actions);
+          blocks.push(p.el);
+        }
+
+        if (state.ui.cat === "audio") {
+          const p = make.panel("声音");
+          const g = document.createElement("div");
+          g.className = "grid two";
+
+          const mute = make.field("静音");
+          const sw = make.switch("静音（Master）");
+          sw.input.checked = state.data.audio.muted;
+          sw.input.addEventListener("change", () => updateFrom("audio.muted", sw.input.checked));
+          mute.el.appendChild(sw.wrap);
+          mute.el.appendChild(make.hint("原型：应影响 Howler / WebAudio 总线。"));
+          push("静音 mute muted", mute.el);
+
+          const mkVol = (key, title) => {
+            const f = make.field(title);
+            const r = make.range(0, 1, 0.01);
+            r.range.value = String(state.data.audio[key]);
+            r.num.value = String(state.data.audio[key]);
+            const sync = (v) => {
+              const s = String(v);
+              if (document.activeElement !== r.range) r.range.value = s;
+              if (document.activeElement !== r.num) r.num.value = s;
+            };
+            r.range.addEventListener("input", () => {
+              const v = Number(r.range.value);
+              if (!Number.isFinite(v)) return;
+              sync(v);
+              updateFrom("audio." + key, v);
+            });
+            r.num.addEventListener("input", () => {
+              const v = Number(r.num.value);
+              if (!Number.isFinite(v)) return;
+              sync(v);
+              updateFrom("audio." + key, v);
+            });
+            f.el.appendChild(r.wrap);
+            return f.el;
+          };
+
+          push("主音量 master", g.appendChild(mkVol("master", "主音量")));
+          push("BGM 音量 bgm", g.appendChild(mkVol("bgm", "BGM 音量")));
+          push("音效 sfx", g.appendChild(mkVol("sfx", "音效音量")));
+          push("UI 音量 ui", g.appendChild(mkVol("ui", "UI 音量")));
+
+          p.el.appendChild(g);
+
+          const test = make.row(true);
+          test.appendChild(make.hint("原型：这里可以放“试听音效/切曲”之类的按钮。"));
+          const btn1 = document.createElement("button");
+          btn1.className = "btn";
+          btn1.type = "button";
+          btn1.textContent = "试听：UI Click";
+          btn1.addEventListener("click", () => showToast("播放 UI Click（原型）"));
+          const btn2 = document.createElement("button");
+          btn2.className = "btn";
+          btn2.type = "button";
+          btn2.textContent = "试听：Hit";
+          btn2.addEventListener("click", () => showToast("播放 Hit（原型）"));
+          test.appendChild(btn1);
+          test.appendChild(btn2);
+          p.el.appendChild(test);
+
+          blocks.push(p.el);
+        }
+
+        if (state.ui.cat === "network") {
+          const p = make.panel("联机");
+          const g = document.createElement("div");
+          g.className = "grid two";
+
+          const region = make.field("Region / 分区");
+          const input = document.createElement("input");
+          input.type = "text";
+          input.value = state.data.network.region;
+          input.className = "mono";
+          input.addEventListener("change", () => updateFrom("network.region", input.value.trim() || "auto"));
+          region.el.appendChild(input);
+          region.el.appendChild(make.hint("示例：auto / cn / us-east / local。"));
+          push("region 分区", region.el);
+
+          const mode = make.field("网络模式");
+          const sel = make.select([
+            { value: "auto", label: "auto（推荐）" },
+            { value: "websocket", label: "websocket" },
+            { value: "webrtc", label: "webrtc（若可用）", disabled: state.platform === "web" },
+          ]);
+          sel.value = state.data.network.mode;
+          sel.addEventListener("change", () => updateFrom("network.mode", sel.value));
+          mode.el.appendChild(sel);
+          mode.el.appendChild(make.hint("原型：实际项目会结合 capability 禁用不支持的选项。"));
+          push("network mode websocket webrtc", mode.el);
+
+          const lc = make.field("延迟补偿");
+          const sw1 = make.switch("启用延迟补偿");
+          sw1.input.checked = state.data.network.latencyCompensation;
+          sw1.input.addEventListener("change", () => updateFrom("network.latencyCompensation", sw1.input.checked));
+          lc.el.appendChild(sw1.wrap);
+          lc.el.appendChild(make.hint("影响：命中判定/回滚策略/插值窗口（取决于同步模型）。"));
+          push("延迟补偿 latency compensation", lc.el);
+
+          const pred = make.field("输入预测");
+          const sw2 = make.switch("启用输入预测");
+          sw2.input.checked = state.data.network.inputPrediction;
+          sw2.input.addEventListener("change", () => updateFrom("network.inputPrediction", sw2.input.checked));
+          pred.el.appendChild(sw2.wrap);
+          pred.el.appendChild(make.hint("影响：本地手感；需要与服务端权威快照 reconcile。"));
+          push("输入预测 input prediction", pred.el);
+
+          g.appendChild(region.el);
+          g.appendChild(mode.el);
+          g.appendChild(lc.el);
+          g.appendChild(pred.el);
+          p.el.appendChild(g);
+
+          const sim = make.panel("网络模拟（原型位）");
+          sim.el.appendChild(make.hint("后续可在这里放：入站/出站延迟、抖动、丢包、乱序、重复、带宽。"));
+          const rr = make.row(true);
+          rr.appendChild(make.hint("快捷："));
+          const b1 = document.createElement("button");
+          b1.className = "btn";
+          b1.type = "button";
+          b1.textContent = "30ms 轻度";
+          b1.addEventListener("click", () => showToast("应用网络模拟：30ms（原型）"));
+          const b2 = document.createElement("button");
+          b2.className = "btn";
+          b2.type = "button";
+          b2.textContent = "120ms 丢包";
+          b2.addEventListener("click", () => showToast("应用网络模拟：120ms+丢包（原型）"));
+          rr.appendChild(b1);
+          rr.appendChild(b2);
+          sim.el.appendChild(rr);
+
+          blocks.push(p.el, sim.el);
+        }
+
+        if (state.ui.cat === "input") {
+          const p = make.panel("控制");
+          p.el.appendChild(make.hint("目标形态：像像素工厂一样独立“按键绑定”面板；这里先放展示与入口。"));
+
+          const top = document.createElement("div");
+          top.className = "grid two";
+
+          const preset = make.field("键位预设");
+          const sel = make.select([
+            { value: "default", label: "默认" },
+            { value: "laptop", label: "笔记本（紧凑）" },
+            { value: "gamepad", label: "手柄优先" },
+          ]);
+          sel.value = state.data.input.mappingPreset;
+          sel.addEventListener("change", () => updateFrom("input.mappingPreset", sel.value));
+          preset.el.appendChild(sel);
+          preset.el.appendChild(make.hint("原型：实际项目应写入 SettingsStore.inputMapping。"));
+          push("键位 预设 preset", preset.el);
+
+          const gamepad = make.field("手柄");
+          const sw1 = make.switch("启用手柄");
+          sw1.input.checked = state.data.input.gamepadEnabled;
+          sw1.input.addEventListener("change", () => updateFrom("input.gamepadEnabled", sw1.input.checked));
+          gamepad.el.appendChild(sw1.wrap);
+          gamepad.el.appendChild(make.hint("原型：可以附带“检测到的手柄列表/校准/死区”。"));
+          push("手柄 gamepad", gamepad.el);
+
+          const aim = make.field("辅助瞄准");
+          const sw2 = make.switch("启用辅助瞄准");
+          sw2.input.checked = state.data.input.aimAssist;
+          sw2.input.addEventListener("change", () => updateFrom("input.aimAssist", sw2.input.checked));
+          aim.el.appendChild(sw2.wrap);
+          aim.el.appendChild(make.hint("建议与联机预测/延迟补偿一起评估。"));
+          push("辅助瞄准 aim assist", aim.el);
+
+          const open = make.field("按键绑定");
+          const row = make.row(true);
+          row.appendChild(make.hint("快捷键："));
+          row.appendChild(make.kbd("F1"));
+          const btn = document.createElement("button");
+          btn.className = "btn primary";
+          btn.type = "button";
+          btn.textContent = "打开按键绑定面板";
+          btn.addEventListener("click", () => showToast("打开按键绑定（原型）"));
+          open.el.appendChild(row);
+          open.el.appendChild(btn);
+          open.el.appendChild(make.hint("支持：分类、搜索、轴绑定、逐项/全局重置。"));
+          push("按键绑定 keybind", open.el);
+
+          top.appendChild(preset.el);
+          top.appendChild(gamepad.el);
+          top.appendChild(aim.el);
+          top.appendChild(open.el);
+
+          p.el.appendChild(top);
+
+          const bindings = make.panel("当前绑定（示例）");
+          bindings.el.appendChild(make.hint("原型：这里只展示“可读的映射”，实际映射编辑在独立面板完成。"));
+
+          const tbl = document.createElement("div");
+          tbl.className = "table";
+          const rows = [
+            { title: "P1 移动", meta: "WASD / 方向键", desc: "同时支持：键盘与触屏摇杆（若启用）" },
+            { title: "P1 普攻 / 大招", meta: "Z / X", desc: "对战手感优先：按下即触发输入帧" },
+            { title: "P2 移动", meta: "TFGH / 方向键", desc: "本地双人：P2 需要可改键以适配不同键盘" },
+            { title: "P2 普攻 / 大招", meta: ", / .", desc: "示例映射，不适合所有键盘布局" },
+          ];
+          for (const r of rows) {
+            const it = document.createElement("div");
+            it.className = "item";
+            it.dataset.selected = "false";
+            const main = document.createElement("div");
+            main.className = "item-main";
+            const t = document.createElement("div");
+            t.className = "item-title";
+            t.textContent = r.title;
+            const tag = document.createElement("span");
+            tag.className = "nav-meta";
+            tag.textContent = r.meta;
+            t.appendChild(tag);
+            const sub = document.createElement("div");
+            sub.className = "sub";
+            sub.textContent = r.desc;
+            main.appendChild(t);
+            main.appendChild(sub);
+            const act = document.createElement("div");
+            act.className = "item-actions";
+            const b = document.createElement("button");
+            b.className = "btn";
+            b.type = "button";
+            b.textContent = "重绑…";
+            b.addEventListener("click", () => showToast("开始重绑：" + r.title + "（原型）"));
+            const b2 = document.createElement("button");
+            b2.className = "btn danger";
+            b2.type = "button";
+            b2.textContent = "重置";
+            b2.addEventListener("click", () => showToast("重置：" + r.title + "（原型）"));
+            act.appendChild(b);
+            act.appendChild(b2);
+            it.appendChild(main);
+            it.appendChild(act);
+            tbl.appendChild(it);
+          }
+          bindings.el.appendChild(tbl);
+
+          blocks.push(p.el, bindings.el);
+        }
+
+        if (state.ui.cat === "quality") {
+          const p = make.panel("图形");
+          const g = document.createElement("div");
+          g.className = "grid two";
+
+          const preset = make.field("质量预设");
+          const sel = make.select([
+            { value: "low", label: "低" },
+            { value: "medium", label: "中" },
+            { value: "high", label: "高" },
+            { value: "auto", label: "自动（推荐）" },
+          ]);
+          sel.value = state.data.quality.preset;
+          sel.addEventListener("change", () => updateFrom("quality.preset", sel.value));
+          preset.el.appendChild(sel);
+          preset.el.appendChild(make.hint("原型：预设应同时影响 shadows/postProcess/particleDensity 等。"));
+          push("质量 预设 preset", preset.el);
+
+          const fps = make.field("FPS 上限");
+          const r = make.range(30, 240, 5);
+          r.range.value = String(state.data.quality.fpsCap);
+          r.num.value = String(state.data.quality.fpsCap);
+          const sync = (v) => {
+            const s = String(v);
+            if (document.activeElement !== r.range) r.range.value = s;
+            if (document.activeElement !== r.num) r.num.value = s;
+          };
+          r.range.addEventListener("input", () => {
+            const v = Number(r.range.value);
+            if (!Number.isFinite(v)) return;
+            sync(v);
+            updateFrom("quality.fpsCap", v);
+          });
+          r.num.addEventListener("input", () => {
+            const v = Number(r.num.value);
+            if (!Number.isFinite(v)) return;
+            sync(v);
+            updateFrom("quality.fpsCap", v);
+          });
+          fps.el.appendChild(r.wrap);
+          fps.el.appendChild(make.hint("原型：移动端/VR 可能有固定帧率策略。"));
+          push("fps cap 上限", fps.el);
+
+          const vsync = make.field("VSync");
+          const sw1 = make.switch("启用 VSync");
+          sw1.input.checked = state.data.quality.vsync;
+          sw1.input.addEventListener("change", () => updateFrom("quality.vsync", sw1.input.checked));
+          vsync.el.appendChild(sw1.wrap);
+          vsync.el.appendChild(make.hint("桌面端常见；Web 可能受浏览器限制。"));
+          push("vsync", vsync.el);
+
+          const fx = make.field("后处理");
+          const sw2 = make.switch("启用后处理");
+          sw2.input.checked = state.data.quality.postProcess;
+          sw2.input.addEventListener("change", () => updateFrom("quality.postProcess", sw2.input.checked));
+          fx.el.appendChild(sw2.wrap);
+          fx.el.appendChild(make.hint("原型：Bloom/CRT/色散等。"));
+          push("post process 后处理", fx.el);
+
+          const shadow = make.field("阴影");
+          const sw3 = make.switch("启用阴影");
+          sw3.input.checked = state.data.quality.shadows;
+          sw3.input.addEventListener("change", () => updateFrom("quality.shadows", sw3.input.checked));
+          shadow.el.appendChild(sw3.wrap);
+          shadow.el.appendChild(make.hint("原型：对性能影响大，应提供解释与降级。"));
+          push("阴影 shadows", shadow.el);
+
+          const particles = make.field("粒子密度");
+          const pd = make.range(0, 1, 0.05);
+          pd.range.value = String(state.data.quality.particleDensity);
+          pd.num.value = String(state.data.quality.particleDensity);
+          const sync2 = (v) => {
+            const s = String(v);
+            if (document.activeElement !== pd.range) pd.range.value = s;
+            if (document.activeElement !== pd.num) pd.num.value = s;
+          };
+          pd.range.addEventListener("input", () => {
+            const v = Number(pd.range.value);
+            if (!Number.isFinite(v)) return;
+            sync2(v);
+            updateFrom("quality.particleDensity", v);
+          });
+          pd.num.addEventListener("input", () => {
+            const v = Number(pd.num.value);
+            if (!Number.isFinite(v)) return;
+            sync2(v);
+            updateFrom("quality.particleDensity", v);
+          });
+          particles.el.appendChild(pd.wrap);
+          particles.el.appendChild(make.hint("与“不同步粒子，本地重建”策略相容。"));
+          push("粒子 density particle", particles.el);
+
+          g.appendChild(preset.el);
+          g.appendChild(fps.el);
+          g.appendChild(vsync.el);
+          g.appendChild(fx.el);
+          g.appendChild(shadow.el);
+          g.appendChild(particles.el);
+          p.el.appendChild(g);
+          blocks.push(p.el);
+        }
+
+        if (state.ui.cat === "accessibility") {
+          const p = make.panel("无障碍");
+          const g = document.createElement("div");
+          g.className = "grid two";
+
+          const rm = make.field("减少动态效果");
+          const sw1 = make.switch("减少动效 / 过渡");
+          sw1.input.checked = state.data.accessibility.reducedMotion;
+          sw1.input.addEventListener("change", () => updateFrom("accessibility.reducedMotion", sw1.input.checked));
+          rm.el.appendChild(sw1.wrap);
+          rm.el.appendChild(make.hint("原型：影响屏幕震动、粒子强度、UI 动画。"));
+          push("reduced motion 动效", rm.el);
+
+          const hc = make.field("高对比度");
+          const sw2 = make.switch("启用高对比度");
+          sw2.input.checked = state.data.accessibility.highContrast;
+          sw2.input.addEventListener("change", () => updateFrom("accessibility.highContrast", sw2.input.checked));
+          hc.el.appendChild(sw2.wrap);
+          hc.el.appendChild(make.hint("原型：颜色 token 切换 + UI 边框增强。"));
+          push("high contrast 高对比", hc.el);
+
+          const cb = make.field("色盲模式");
+          const sel = make.select([
+            { value: "none", label: "无" },
+            { value: "protanopia", label: "红色盲（Protanopia）" },
+            { value: "deuteranopia", label: "绿色盲（Deuteranopia）" },
+            { value: "tritanopia", label: "蓝色盲（Tritanopia）" },
+          ]);
+          sel.value = state.data.accessibility.colorBlind;
+          sel.addEventListener("change", () => updateFrom("accessibility.colorBlind", sel.value));
+          cb.el.appendChild(sel);
+          cb.el.appendChild(make.hint("原型：需要配合调色板与 HUD 强化符号。"));
+          push("color blind 色盲", cb.el);
+
+          const p2 = make.field("示例提示");
+          const msg = document.createElement("div");
+          msg.className = "hint";
+          msg.innerHTML =
+            '无障碍设置需要“有可见产出”：例如 <span class="kbd">准星</span>、<span class="kbd">敌我颜色</span>、<span class="kbd">警告闪烁</span> 都要提供等价替代。';
+          p2.el.appendChild(msg);
+          push("准星 敌我 警告", p2.el);
+
+          g.appendChild(rm.el);
+          g.appendChild(hc.el);
+          g.appendChild(cb.el);
+          g.appendChild(p2.el);
+          p.el.appendChild(g);
+          blocks.push(p.el);
+        }
+
+        if (state.ui.cat === "data") {
+          const p = make.panel("数据");
+          const g = document.createElement("div");
+          g.className = "grid two";
+
+          const exp = make.field("导出设置/存档");
+          const format = make.select([
+            { value: "zip", label: "zip（推荐）" },
+            { value: "json", label: "json（仅设置）" },
+          ]);
+          format.value = state.data.data.exportFormat;
+          format.addEventListener("change", () => updateFrom("data.exportFormat", format.value));
+          exp.el.appendChild(format);
+          const sw1 = make.switch("包含日志");
+          sw1.input.checked = state.data.data.includeLogs;
+          sw1.input.addEventListener("change", () => updateFrom("data.includeLogs", sw1.input.checked));
+          const sw2 = make.switch("包含回放/回归基线");
+          sw2.input.checked = state.data.data.includeReplays;
+          sw2.input.addEventListener("change", () => updateFrom("data.includeReplays", sw2.input.checked));
+          const sw3 = make.switch("包含截图");
+          sw3.input.checked = state.data.data.includeScreenshots;
+          sw3.input.addEventListener("change", () => updateFrom("data.includeScreenshots", sw3.input.checked));
+          const srow = make.row();
+          srow.appendChild(sw1.wrap);
+          srow.appendChild(sw2.wrap);
+          srow.appendChild(sw3.wrap);
+          exp.el.appendChild(srow);
+          const btn = document.createElement("button");
+          btn.className = "btn primary";
+          btn.type = "button";
+          btn.textContent = "导出…";
+          btn.addEventListener("click", () => showToast("导出数据包（原型）"));
+          exp.el.appendChild(btn);
+          exp.el.appendChild(make.hint("原型：对照像素工厂的“导出 zip/打开目录/导出日志”。"));
+          push("导出 export zip", exp.el);
+
+          const imp = make.field("导入");
+          const btn2 = document.createElement("button");
+          btn2.className = "btn";
+          btn2.type = "button";
+          btn2.textContent = "选择文件导入…";
+          btn2.addEventListener("click", () => showToast("选择文件导入（原型）"));
+          imp.el.appendChild(btn2);
+          imp.el.appendChild(make.hint("导入应做校验：schemaVersion、完整性、冲突提示。"));
+          push("导入 import", imp.el);
+
+          const open = make.field("本地目录");
+          const row = make.row();
+          const b1 = document.createElement("button");
+          b1.className = "btn";
+          b1.type = "button";
+          b1.textContent = "打开配置目录";
+          b1.addEventListener("click", () => showToast("打开配置目录（原型）"));
+          const b2 = document.createElement("button");
+          b2.className = "btn";
+          b2.type = "button";
+          b2.textContent = "打开实例 Profile 目录";
+          b2.addEventListener("click", () => showToast("打开 profile/" + state.instance + "（原型）"));
+          row.appendChild(b1);
+          row.appendChild(b2);
+          open.el.appendChild(row);
+          open.el.appendChild(make.hint("原型：只在 Tauri 可用；Web 需要替代路径（下载/上传）。"));
+          push("目录 profile 配置", open.el);
+
+          const danger = make.field("危险操作");
+          const dr = make.row(true);
+          dr.appendChild(make.hint("清空/重置应有二次确认与范围。"));
+          const clear = document.createElement("button");
+          clear.className = "btn danger";
+          clear.type = "button";
+          clear.textContent = "清空存档…";
+          clear.addEventListener("click", async () => {
+            const body = document.createElement("div");
+            body.appendChild(make.hint("将清空：存档、回放、战斗缓存（示例）。", "bad"));
+            const ok = await showModal("危险操作确认", body, "我已理解，继续");
+            if (!ok) return;
+            showToast("已清空（原型）");
+          });
+          danger.el.appendChild(dr);
+          danger.el.appendChild(clear);
+          push("清空 reset wipe", danger.el);
+
+          g.appendChild(exp.el);
+          g.appendChild(imp.el);
+          g.appendChild(open.el);
+          g.appendChild(danger.el);
+          p.el.appendChild(g);
+
+          blocks.push(p.el);
+        }
+
+        if (state.ui.cat === "about") {
+          const p = make.panel("关于");
+          const g = document.createElement("div");
+          g.className = "grid";
+
+          const a = make.panel("版本信息");
+          const list = document.createElement("div");
+          list.className = "table";
+          const add = (t, v) => {
+            const it = document.createElement("div");
+            it.className = "item";
+            const main = document.createElement("div");
+            main.className = "item-main";
+            const title = document.createElement("div");
+            title.className = "item-title";
+            title.textContent = t;
+            const sub = document.createElement("div");
+            sub.className = "sub";
+            sub.textContent = v;
+            main.appendChild(title);
+            main.appendChild(sub);
+            it.appendChild(main);
+            const act = document.createElement("div");
+            act.className = "item-actions";
+            const b = document.createElement("button");
+            b.className = "btn";
+            b.type = "button";
+            b.textContent = "复制";
+            b.addEventListener("click", async () => {
+              try {
+                await navigator.clipboard.writeText(v);
+                showToast("已复制");
+              } catch {
+                showToast("复制失败（原型）");
+              }
+            });
+            act.appendChild(b);
+            it.appendChild(act);
+            list.appendChild(it);
+          };
+          add("Build", state.data.about.build);
+          add("Settings Schema", "v" + state.data.about.settingsSchemaVersion);
+          add("Protocol", "v" + state.data.about.protocolVersion);
+          add("Profile", "profiles/" + state.instance);
+          a.el.appendChild(list);
+
+          const b = make.panel("支持");
+          b.el.appendChild(make.hint("原型：这里可以放“打开日志/导出诊断包/查看许可证/问题反馈入口”。"));
+          const row = make.row();
+          const l1 = document.createElement("button");
+          l1.className = "btn";
+          l1.type = "button";
+          l1.textContent = "导出诊断包…";
+          l1.addEventListener("click", () => showToast("导出诊断包（原型）"));
+          const l2 = document.createElement("button");
+          l2.className = "btn";
+          l2.type = "button";
+          l2.textContent = "打开许可证";
+          l2.addEventListener("click", () => showToast("打开许可证（原型）"));
+          row.appendChild(l1);
+          row.appendChild(l2);
+          b.el.appendChild(row);
+
+          g.appendChild(a.el);
+          g.appendChild(b.el);
+          p.el.appendChild(g);
+          blocks.push(p.el);
+        }
+
+        if (blocks.length === 0) {
+          const empty = make.panel("无匹配项");
+          empty.el.appendChild(make.hint("没有匹配到任何设置项。"));
+          blocks.push(empty.el);
+        }
+
+        for (const b of blocks) el.page.appendChild(b);
+      };
+
+      const render = () => {
+        el.platform.textContent = state.platform;
+        el.instance.textContent = state.instance;
+        recomputeDerived();
+        el.btnResetAll.disabled = !state.derived.modifiedFromDefault;
+        renderNav();
+        renderPage();
+      };
+
+      el.search.addEventListener("input", () => {
+        state.ui.query = el.search.value;
+        renderNav();
+        renderPage();
+      });
+
+      el.btnResetAll.addEventListener("click", async () => {
+        if (!state.derived.modifiedFromDefault) return;
+        const body = document.createElement("div");
+        body.appendChild(make.hint("将重置所有设置为默认值。", "bad"));
+        body.appendChild(make.hint("建议：提供“按分类重置”和“仅重置本设备/仅重置本实例”。"));
+        const ok = await showModal("确认恢复默认", body, "恢复默认");
+        if (!ok) return;
+        for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) {
+          state.data[k] = deepClone(v);
+        }
+        recomputeDerived();
+        scheduleAutoSave();
+        render();
+        showToast("已恢复默认（原型）");
+      });
+
+      el.btnClose.addEventListener("click", async () => {
+        showToast("已关闭（原型）");
+      });
+
+      const params = new URLSearchParams(location.search);
+      const p = params.get("platform");
+      const inst = params.get("instance");
+      if (p === "web" || p === "tauri") state.platform = p;
+      if (inst && /^[a-z0-9_-]{1,32}$/i.test(inst)) state.instance = inst;
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "F1") {
+          if (state.ui.cat !== "input") {
+            state.ui.cat = "input";
+            render();
+          }
+          showToast("快捷键：打开按键绑定（原型）");
+        }
+        if (e.key === "Escape") $("btn-close").click();
+      });
+
+      setPersistenceStatus("saved");
+      recomputeDerived();
+      render();
+    </script>
+  </body>
+</html>
