@@ -7,7 +7,7 @@
   "scripts": {
     "build": "nuxt build --dotenv .env.production",
     "dev": "nuxt dev --dotenv .env.local",
-    "generate": "NUXT_SSR=false nuxt generate --dotenv .env.production",
+    "generate": "nuxt generate --dotenv .env.generate",
     "preview": "nuxt preview --dotenv .env.production",
     "test:stage2": "node --test tests/stage2-adaptation.test.mjs",
     "postinstall": "nuxt prepare",

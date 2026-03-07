@@ -2,6 +2,8 @@
 
 [English](README.en-US.md) | [中文](README.md)
 
+<div align="center">
+
 **Do Not Fork Gentle Into That Private Repo**
 
 Do not fork gentle into that private repo,
@@ -41,6 +43,8 @@ Curse, bless, me now with your fierce merge, I pray.
 Do not fork gentle into that private repo.
 
 Rage, rage against the dying of the open.
+
+</div>
 
 This repository is a downstream fork of `mlogclub/bbs-go`. The goal is to keep the frontend source (site + admin) buildable and reviewable while continuing backend evolution, so we can fix bugs and develop new features as needed.
 

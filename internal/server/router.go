@@ -52,10 +52,27 @@ func NewServer() {
 		Compress: true,
 	})
 
-	// admin
-	app.HandleDir("/admin", "./admin")
-	// site
-	app.HandleDir("/", "./site", iris.DirOptions{
+	exists := func(p string) bool {
+		_, err := os.Stat(p)
+		return err == nil
+	}
+
+	adminDir := "./admin"
+	if exists("./admin/dist/index.html") {
+		adminDir = "./admin/dist"
+	}
+	app.HandleDir("/admin", adminDir, iris.DirOptions{
+		ShowList:  false,
+		Compress:  true,
+		SPA:       true,
+		IndexName: "index.html",
+	})
+
+	siteDir := "./site"
+	if exists("./site/.output/public/index.html") {
+		siteDir = "./site/.output/public"
+	}
+	app.HandleDir("/", siteDir, iris.DirOptions{
 		ShowList:  false,
 		Compress:  true,
 		SPA:       true,
