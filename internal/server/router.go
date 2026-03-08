@@ -103,6 +103,8 @@ func NewServer() {
 		m.Party("/task").Handle(new(api.TaskController))
 		m.Party("/badge").Handle(new(api.BadgeController))
 		m.Party("/vote").Handle(new(api.VoteController))
+		m.Party("/stance").Handle(new(api.StanceController))
+		m.Party("/outcome").Handle(new(api.OutcomeController))
 	})
 
 	// admin

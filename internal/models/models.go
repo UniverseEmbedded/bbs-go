@@ -15,7 +15,7 @@ var Models = []interface{}{
 	&TaskConfig{}, &UserTaskEvent{}, &UserTaskLog{},
 	&Badge{}, &UserBadge{},
 	&LevelConfig{},
-	&Vote{}, &VoteOption{}, &VoteRecord{},
+	&Vote{}, &VoteOption{}, &VoteRecord{}, &Stance{}, &StanceChoice{}, &Outcome{},
 	&UserScoreLog{}, &UserExpLog{},
 	&OperateLog{}, &EmailLog{}, &EmailCode{}, &SmsCode{}, &CheckIn{}, &UserFollow{}, &UserFeed{}, &UserReport{},
 	&ForbiddenWord{},
@@ -284,6 +284,19 @@ type Vote struct {
 	OptionCount int                `gorm:"not null" json:"optionCount" form:"optionCount" redis:"optionCount"`     // 选项数量
 	VoteCount   int                `gorm:"not null;default:0" json:"voteCount" form:"voteCount" redis:"voteCount"` // 投票数量
 	CreateTime  int64              `gorm:"not null" json:"createTime" form:"createTime" redis:"createTime"`        // 创建时间
+
+	PollType             constants.PollType             `gorm:"size:32;default:'poll'" json:"pollType" form:"pollType"`                       // 投票类型：proposal/poll/count/ranked_choice
+	HideResults          constants.HideResultsType      `gorm:"not null;default:0" json:"hideResults" form:"hideResults"`                     // 结果可见性：0=off, 1=until_vote, 2=until_closed
+	Anonymous            bool                           `gorm:"not null;default:false" json:"anonymous" form:"anonymous"`                     // 是否匿名投票
+	OpeningAt            *int64                         `json:"openingAt" form:"openingAt"`                                                   // 计划开始时间
+	OpenedAt             *int64                         `json:"openedAt" form:"openedAt"`                                                     // 实际开启时间
+	ClosingAt            *int64                         `json:"closingAt" form:"closingAt"`                                                   // 计划截止时间
+	ClosedAt             *int64                         `json:"closedAt" form:"closedAt"`                                                     // 实际关闭时间
+	VoterCanAddOptions   bool                           `gorm:"not null;default:false" json:"voterCanAddOptions" form:"voterCanAddOptions"`   // 投票者是否能添加选项
+	SpecifiedVotersOnly  bool                           `gorm:"not null;default:false" json:"specifiedVotersOnly" form:"specifiedVotersOnly"` // 是否仅限指定用户投票
+	StanceReasonRequired constants.StanceReasonRequired `gorm:"not null;default:0" json:"stanceReasonRequired" form:"stanceReasonRequired"`   // 是否必须填写理由：0=禁用, 1=可选, 2=必填
+	QuorumPct            *int                           `json:"quorumPct" form:"quorumPct"`                                                   // 法定人数百分比
+	VersionsCount        int                            `gorm:"not null;default:1" json:"versionsCount" form:"versionsCount"`                 // 版本数
 }
 
 // VoteOption 投票选项
@@ -294,6 +307,13 @@ type VoteOption struct {
 	SortNo     int    `gorm:"not null" json:"sortNo" form:"sortNo" redis:"sortNo"`                    // 排序
 	VoteCount  int    `gorm:"not null;default:0" json:"voteCount" form:"voteCount" redis:"voteCount"` // 票数
 	CreateTime int64  `gorm:"not null" json:"createTime" form:"createTime" redis:"createTime"`        // 创建时间
+
+	Icon       *string `json:"icon" form:"icon"`                                       // 选项图标
+	Meaning    *string `json:"meaning" form:"meaning"`                                 // 选项语义
+	Prompt     *string `json:"prompt" form:"prompt"`                                   // 选择时的提示
+	Priority   int     `gorm:"not null;default:0" json:"priority" form:"priority"`     // 排序优先级
+	TotalScore int     `gorm:"not null;default:0" json:"totalScore" form:"totalScore"` // 总得分（缓存）
+	VoterCount int     `gorm:"not null;default:0" json:"voterCount" form:"voterCount"` // 投票人数（缓存）
 }
 
 // VoteRecord 投票记录
@@ -303,6 +323,50 @@ type VoteRecord struct {
 	VoteId     int64  `gorm:"uniqueIndex:idx_user_vote" json:"voteId" form:"voteId"` // 投票ID
 	OptionIds  string `gorm:"type:text" json:"optionIds" form:"optionIds"`           // 选项ID列表，逗号分隔
 	CreateTime int64  `json:"createTime" form:"createTime"`                          // 投票时间
+}
+
+// Stance 投票立场（替代VoteRecord，支持立场可修改）
+type Stance struct {
+	Model
+	PollId         int64  `gorm:"not null;index:idx_stance_poll_id" json:"pollId" form:"pollId"`                      // 关联的投票
+	ParticipantId  int64  `gorm:"not null;index:idx_stance_participant_id" json:"participantId" form:"participantId"` // 投票用户
+	Reason         string `gorm:"type:text" json:"reason" form:"reason"`                                              // 投票理由
+	ReasonFormat   string `gorm:"size:32" json:"reasonFormat" form:"reasonFormat"`                                    // 理由格式
+	Latest         bool   `gorm:"not null;default:true;index:idx_stance_latest" json:"latest" form:"latest"`          // 是否最新立场
+	CastAt         *int64 `json:"castAt" form:"castAt"`                                                               // 投票时间
+	RevokedAt      *int64 `json:"revokedAt" form:"revokedAt"`                                                         // 撤销时间
+	RevokerId      int64  `json:"revokerId" form:"revokerId"`                                                         // 撤销者ID
+	Admin          bool   `gorm:"not null;default:false" json:"admin" form:"admin"`                                   // 是否管理员邀请
+	Guest          bool   `gorm:"not null;default:false" json:"guest" form:"guest"`                                   // 是否被邀请的访客
+	InviterId      int64  `json:"inviterId" form:"inviterId"`                                                         // 邀请者ID
+	OptionScores   string `gorm:"type:text" json:"optionScores" form:"optionScores"`                                  // 选项得分 JSON
+	NoneOfTheAbove bool   `gorm:"not null;default:false" json:"noneOfTheAbove" form:"noneOfTheAbove"`                 // 是否选择"以上都不是"
+	CreateTime     int64  `gorm:"not null" json:"createTime" form:"createTime"`                                       // 创建时间
+	UpdateTime     int64  `gorm:"not null" json:"updateTime" form:"updateTime"`                                       // 更新时间
+}
+
+// StanceChoice 立场选项关联
+type StanceChoice struct {
+	Model
+	StanceId     int64 `gorm:"not null;index:idx_stance_choice_stance_id" json:"stanceId" form:"stanceId"`         // 关联的立场
+	PollOptionId int64 `gorm:"not null;index:idx_stance_choice_option_id" json:"pollOptionId" form:"pollOptionId"` // 关联的选项
+	Score        int   `gorm:"not null;default:1" json:"score" form:"score"`                                       // 得分
+	CreateTime   int64 `gorm:"not null" json:"createTime" form:"createTime"`                                       // 创建时间
+}
+
+// Outcome 投票结果声明
+type Outcome struct {
+	Model
+	PollId          int64  `gorm:"not null;index:idx_outcome_poll_id" json:"pollId" form:"pollId"`             // 关联的投票
+	Statement       string `gorm:"type:text" json:"statement" form:"statement"`                                // 声明内容
+	StatementFormat string `gorm:"size:32" json:"statementFormat" form:"statementFormat"`                      // 内容格式
+	AuthorId        int64  `gorm:"not null" json:"authorId" form:"authorId"`                                   // 发布者
+	PollOptionId    *int64 `json:"pollOptionId" form:"pollOptionId"`                                           // 关联的获胜选项
+	Latest          bool   `gorm:"not null;default:true;index:idx_outcome_latest" json:"latest" form:"latest"` // 是否最新声明
+	ReviewOn        *int64 `json:"reviewOn" form:"reviewOn"`                                                   // 复查日期
+	CustomFields    string `gorm:"type:text" json:"customFields" form:"customFields"`                          // 扩展字段 JSON
+	CreateTime      int64  `gorm:"not null" json:"createTime" form:"createTime"`                               // 创建时间
+	UpdateTime      int64  `gorm:"not null" json:"updateTime" form:"updateTime"`                               // 更新时间
 }
 
 // 主题标签

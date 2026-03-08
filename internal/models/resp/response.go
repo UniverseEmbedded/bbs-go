@@ -172,15 +172,35 @@ type VoteResponse struct {
 	Voted       bool                 `json:"voted"`
 	OptionIds   []int64              `json:"optionIds"`
 	Options     []VoteOptionResponse `json:"options"`
+
+	PollType             constants.PollType             `json:"pollType"`
+	HideResults          constants.HideResultsType      `json:"hideResults"`
+	Anonymous            bool                           `json:"anonymous"`
+	OpeningAt            *int64                         `json:"openingAt"`
+	OpenedAt             *int64                         `json:"openedAt"`
+	ClosingAt            *int64                         `json:"closingAt"`
+	ClosedAt             *int64                         `json:"closedAt"`
+	VoterCanAddOptions   bool                           `json:"voterCanAddOptions"`
+	SpecifiedVotersOnly  bool                           `json:"specifiedVotersOnly"`
+	StanceReasonRequired constants.StanceReasonRequired `json:"stanceReasonRequired"`
+	QuorumPct            *int                           `json:"quorumPct"`
+	CanViewResults       bool                           `json:"canViewResults"`
+	Outcome              *OutcomeResponse               `json:"outcome,omitempty"`
 }
 
 type VoteOptionResponse struct {
-	Id        int64   `json:"id"`
-	Content   string  `json:"content"`
-	SortNo    int     `json:"sortNo"`
-	VoteCount int     `json:"voteCount"`
-	Percent   float64 `json:"percent"`
-	Voted     bool    `json:"voted"`
+	Id         int64   `json:"id"`
+	Content    string  `json:"content"`
+	SortNo     int     `json:"sortNo"`
+	VoteCount  int     `json:"voteCount"`
+	Percent    float64 `json:"percent"`
+	Voted      bool    `json:"voted"`
+	Icon       *string `json:"icon,omitempty"`
+	Meaning    *string `json:"meaning,omitempty"`
+	Prompt     *string `json:"prompt,omitempty"`
+	Priority   int     `json:"priority"`
+	TotalScore int     `json:"totalScore"`
+	VoterCount int     `json:"voterCount"`
 }
 
 // CommentResponse 评论返回数据
@@ -330,4 +350,41 @@ type BadgeResponse struct {
 	Owned       bool   `json:"owned"`      // 当前登录用户是否已获得
 	Worn        bool   `json:"worn"`       // 是否已佩戴
 	ObtainTime  int64  `json:"obtainTime"` // 获得时间（未获得为0）
+}
+
+type StanceResponse struct {
+	Id             int64                  `json:"id"`
+	PollId         int64                  `json:"pollId"`
+	ParticipantId  int64                  `json:"participantId"`
+	Participant    *UserInfo              `json:"participant,omitempty"`
+	Reason         string                 `json:"reason"`
+	ReasonFormat   string                 `json:"reasonFormat"`
+	Latest         bool                   `json:"latest"`
+	CastAt         *int64                 `json:"castAt"`
+	RevokedAt      *int64                 `json:"revokedAt"`
+	NoneOfTheAbove bool                   `json:"noneOfTheAbove"`
+	Choices        []StanceChoiceResponse `json:"choices,omitempty"`
+	CreateTime     int64                  `json:"createTime"`
+}
+
+type StanceChoiceResponse struct {
+	Id           int64 `json:"id"`
+	StanceId     int64 `json:"stanceId"`
+	PollOptionId int64 `json:"pollOptionId"`
+	Score        int   `json:"score"`
+}
+
+type OutcomeResponse struct {
+	Id              int64               `json:"id"`
+	PollId          int64               `json:"pollId"`
+	Statement       string              `json:"statement"`
+	StatementFormat string              `json:"statementFormat"`
+	AuthorId        int64               `json:"authorId"`
+	Author          *UserInfo           `json:"author"`
+	PollOptionId    *int64              `json:"pollOptionId"`
+	PollOption      *VoteOptionResponse `json:"pollOption,omitempty"`
+	Latest          bool                `json:"latest"`
+	ReviewOn        *int64              `json:"reviewOn"`
+	CreateTime      int64               `json:"createTime"`
+	UpdateTime      int64               `json:"updateTime"`
 }

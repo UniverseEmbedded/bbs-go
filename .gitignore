@@ -48,3 +48,5 @@ bbs-go.db
 bbs-go.db*
 
 __debug_bin*
+
+/temp/

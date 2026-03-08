@@ -21,6 +21,26 @@ export async function castVote(voteId, optionIds) {
   })
 }
 
+export async function fetchStance(pollId) {
+  return await useHttpGet(`/api/stance/latest?pollId=${pollId}`)
+}
+
+export async function createStance(form) {
+  return await useHttpPost("/api/stance/create", form)
+}
+
+export async function revokeStance(stanceId) {
+  return await useHttpPost(`/api/stance/revoke/${stanceId}`, {})
+}
+
+export async function fetchOutcome(pollId) {
+  return await useHttpGet(`/api/outcome/poll?pollId=${pollId}`)
+}
+
+export async function createOutcome(form) {
+  return await useHttpPost("/api/outcome/create", form)
+}
+
 export async function fetchBadges(userId = "") {
   const params = {}
   if (userId) {
