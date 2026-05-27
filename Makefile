@@ -7,6 +7,7 @@ GO ?= go
 PNPM ?= pnpm
 GOOS ?= $(shell $(GO) env GOOS)
 GOARCH ?= $(shell $(GO) env GOARCH)
+IS_WINDOWS := $(filter Windows_NT,$(OS))
 
 .DEFAULT_GOAL := help
 
@@ -79,12 +80,20 @@ check: test web-typecheck web-lint
 .PHONY: clean
 clean:
 	@echo "Cleaning Go binaries..."
+ifeq ($(IS_WINDOWS),Windows_NT)
+	@del /Q $(APP).exe $(APP)-linux-* $(APP)-macos-* $(APP)-windows-*.exe 2>nul || exit 0
+else
 	@rm -f $(APP) $(APP)-linux-* $(APP)-macos-* $(APP)-windows-*.exe
+endif
 
 .PHONY: clean-web
 clean-web:
 	@echo "Cleaning web build output..."
+ifeq ($(IS_WINDOWS),Windows_NT)
+	@if exist $(WEB_DIR)\build rmdir /S /Q $(WEB_DIR)\build
+else
 	@rm -rf $(WEB_DIR)/build
+endif
 
 .PHONY: web-install
 web-install:
@@ -101,10 +110,14 @@ web-build-spa:
 
 .PHONY: ensure-spa
 ensure-spa:
+ifeq ($(IS_WINDOWS),Windows_NT)
+	@if not exist "$(SPA_INDEX)" echo SPA build output is missing; building SPA... && $(MAKE) web-build-spa
+else
 	@if [ ! -f "$(SPA_INDEX)" ]; then \
 		echo "SPA build output is missing; building SPA..."; \
 		$(MAKE) web-build-spa; \
 	fi
+endif
 
 .PHONY: build-spa
 build-spa: web-build-spa

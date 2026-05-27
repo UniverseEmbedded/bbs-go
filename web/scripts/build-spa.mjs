@@ -4,17 +4,27 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
-const pnpmCmd = process.platform === "win32" ? "pnpm.cmd" : "pnpm"
+const reactRouterBin = path.join(
+  root,
+  "node_modules",
+  ".bin",
+  process.platform === "win32" ? "react-router.CMD" : "react-router"
+)
 
-const result = spawnSync(pnpmCmd, ["exec", "react-router", "build"], {
+const result = spawnSync(reactRouterBin, ["build"], {
   cwd: root,
   stdio: "inherit",
   env: {
     ...process.env,
     BBSGO_WEB_SPA: "true",
   },
+  shell: process.platform === "win32",
 })
 
+if (result.error) {
+  console.error(result.error)
+  process.exit(1)
+}
 if (result.status !== 0) {
   process.exit(result.status ?? 1)
 }
