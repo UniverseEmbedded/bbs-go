@@ -239,6 +239,18 @@ func registerAPIRoutes(group *gin.RouterGroup) {
 	voteGroup.POST("/cast", apiHandlers.VoteCast)
 	voteGroup.GET("/:id", apiHandlers.VoteDetail)
 
+	stanceGroup := group.Group("/stance")
+	stanceGroup.POST("/create", apiHandlers.StanceCreate)
+	stanceGroup.POST("/revoke/:id", apiHandlers.StanceRevoke)
+	stanceGroup.GET("/latest", apiHandlers.StanceLatest)
+	stanceGroup.GET("/options", apiHandlers.StanceOptions)
+
+	outcomeGroup := group.Group("/outcome")
+	outcomeGroup.POST("/create", apiHandlers.OutcomeCreate)
+	outcomeGroup.POST("/update/:id", apiHandlers.OutcomeUpdate)
+	outcomeGroup.GET("/poll", apiHandlers.OutcomePoll)
+	outcomeGroup.GET("/:id", apiHandlers.OutcomeDetail)
+
 }
 
 func registerAdminRoutes(group *gin.RouterGroup) {

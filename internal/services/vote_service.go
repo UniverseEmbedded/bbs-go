@@ -25,8 +25,7 @@ func newVoteService() *voteService {
 	return &voteService{}
 }
 
-type voteService struct {
-}
+type voteService struct{}
 
 func (s *voteService) Get(id int64) *models.Vote {
 	if id <= 0 {
@@ -97,18 +96,49 @@ func (s *voteService) CheckCreateForm(form *req.VoteDTO) error {
 		return errors.New(locales.Get("vote.option_max"))
 	}
 
+	optionSet := make(map[string]struct{}, len(form.Options))
 	for i := range form.Options {
 		form.Options[i].Content = strings.TrimSpace(form.Options[i].Content)
+		form.Options[i].Meaning = strings.TrimSpace(form.Options[i].Meaning)
+		form.Options[i].Prompt = strings.TrimSpace(form.Options[i].Prompt)
 		if strs.IsBlank(form.Options[i].Content) {
 			return errors.New(locales.Get("vote.option_required"))
 		}
 		if strs.RuneLen(form.Options[i].Content) > 256 {
 			return errors.New(locales.Get("vote.option_too_long"))
 		}
+		key := strings.ToLower(form.Options[i].Content)
+		if _, exists := optionSet[key]; exists {
+			return errors.New(locales.Get("vote.option_duplicate"))
+		}
+		optionSet[key] = struct{}{}
 	}
 
 	if form.ExpiredAt <= dates.NowTimestamp() {
 		return errors.New(locales.Get("vote.expired_at_future"))
+	}
+
+	if form.PollType == "" {
+		form.PollType = constants.PollTypePoll
+	}
+
+	if form.PollType == constants.PollTypeProposal {
+		if form.Type == 0 {
+			form.Type = constants.VoteTypeMultiple
+		}
+		if form.VoteNum <= 0 {
+			form.VoteNum = len(form.Options)
+		}
+		if form.VoteNum > len(form.Options) {
+			form.VoteNum = len(form.Options)
+		}
+		if form.StanceReasonRequired < constants.StanceReasonDisabled || form.StanceReasonRequired > constants.StanceReasonMust {
+			return errors.New(locales.Get("vote.stance_reason_invalid"))
+		}
+		if form.HideResults < constants.HideResultsOff || form.HideResults > constants.HideResultsUntilClosed {
+			return errors.New(locales.Get("vote.hide_results_invalid"))
+		}
+		return nil
 	}
 
 	switch form.Type {
@@ -135,15 +165,24 @@ func (s *voteService) CreateWithOptionsTx(ctx *sqls.TxContext, topicId, userId i
 		return nil, err
 	}
 
+	pollType := form.PollType
+	if pollType == "" {
+		pollType = constants.PollTypePoll
+	}
+
 	vote := &models.Vote{
-		Type:        form.Type,
-		Title:       form.Title,
-		ExpiredAt:   form.ExpiredAt,
-		TopicId:     topicId,
-		UserId:      userId,
-		VoteNum:     form.VoteNum,
-		OptionCount: len(form.Options),
-		CreateTime:  now,
+		Type:                 form.Type,
+		Title:                form.Title,
+		ExpiredAt:            form.ExpiredAt,
+		TopicId:              topicId,
+		UserId:               userId,
+		VoteNum:              form.VoteNum,
+		OptionCount:          len(form.Options),
+		CreateTime:           now,
+		PollType:             pollType,
+		HideResults:          form.HideResults,
+		Anonymous:            form.Anonymous,
+		StanceReasonRequired: form.StanceReasonRequired,
 	}
 	if err := repositories.VoteRepository.Create(ctx.Tx, vote); err != nil {
 		return nil, err
@@ -155,6 +194,14 @@ func (s *voteService) CreateWithOptionsTx(ctx *sqls.TxContext, topicId, userId i
 			Content:    option.Content,
 			SortNo:     i + 1,
 			CreateTime: now,
+		}
+		if option.Meaning != "" {
+			meaning := option.Meaning
+			item.Meaning = &meaning
+		}
+		if option.Prompt != "" {
+			prompt := option.Prompt
+			item.Prompt = &prompt
 		}
 		if err := repositories.VoteOptionRepository.Create(ctx.Tx, item); err != nil {
 			return nil, err
@@ -193,6 +240,9 @@ func (s *voteService) Cast(userId int64, form req.VoteCastReq) error {
 		vote := &models.Vote{}
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(vote, "id = ?", form.VoteId).Error; err != nil {
 			return errors.New(locales.Get("vote.not_found"))
+		}
+		if vote.PollType == constants.PollTypeProposal {
+			return errors.New(locales.Get("vote.proposal_cast_not_supported"))
 		}
 		if dates.NowTimestamp() > vote.ExpiredAt {
 			return errors.New(locales.Get("vote.expired"))

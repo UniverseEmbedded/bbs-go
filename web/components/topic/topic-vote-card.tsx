@@ -4,8 +4,9 @@ import * as React from "react"
 
 import { useIsLogin } from "@/components/app/app-provider"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { apiFetch } from "@/lib/api/client"
-import type { TopicVote } from "@/lib/api/types"
+import type { TopicOutcome, TopicStance, TopicVote } from "@/lib/api/types"
 import { formatDate } from "@/lib/format"
 import { useI18n } from "@/lib/i18n/provider"
 import { msgSuccess, msgWarning } from "@/lib/toast"
@@ -15,6 +16,10 @@ const OPTION_LIMIT = 4
 
 function isSingleVote(vote: TopicVote) {
   return vote.type === 1 || vote.type === "single"
+}
+
+function isProposalVote(vote: TopicVote) {
+  return vote.pollType === "proposal"
 }
 
 function isPkVote(vote: TopicVote) {
@@ -60,6 +65,15 @@ function TopicVoteCardContent({ vote, className }: { vote: TopicVote; className?
   const [checkedIds, setCheckedIds] = React.useState<number[]>(vote?.optionIds || [])
   const [showMore, setShowMore] = React.useState(false)
   const [submitting, setSubmitting] = React.useState(false)
+
+  React.useEffect(() => {
+    setCurrentVote(vote)
+    setCheckedIds(vote.optionIds || [])
+  }, [vote])
+
+  if (isProposalVote(currentVote)) {
+    return <ProposalVoteCard vote={currentVote} className={className} />
+  }
 
   const options = currentVote.options || []
   const canVote = Boolean(isLogin && !currentVote.expired && !currentVote.voted && !submitting)
@@ -241,9 +255,237 @@ function TopicVoteCardContent({ vote, className }: { vote: TopicVote; className?
   )
 }
 
+function ProposalVoteCard({ vote, className }: { vote: TopicVote; className?: string }) {
+  const { t } = useI18n()
+  const isLogin = useIsLogin()
+  const [currentVote, setCurrentVote] = React.useState<TopicVote>(vote)
+  const [checkedIds, setCheckedIds] = React.useState<number[]>(vote.optionIds || [])
+  const [reason, setReason] = React.useState("")
+  const [submitting, setSubmitting] = React.useState(false)
+  const [stance, setStance] = React.useState<TopicStance | null>(null)
+  const [outcome, setOutcome] = React.useState<TopicOutcome | null>(vote.outcome || null)
+
+  React.useEffect(() => {
+    setCurrentVote(vote)
+    setCheckedIds(vote.optionIds || [])
+    setOutcome(vote.outcome || null)
+    setReason("")
+  }, [vote])
+
+  React.useEffect(() => {
+    let mounted = true
+    async function loadLatest() {
+      if (!isLogin) {
+        setStance(null)
+        return
+      }
+      try {
+        const latest = await apiFetch<TopicStance | null>("/api/stance/latest", {
+          params: { pollId: currentVote.id },
+        })
+        if (!mounted) return
+        setStance(latest)
+        setReason(latest?.reason || "")
+      } catch {
+        if (mounted) setStance(null)
+      }
+    }
+    void loadLatest()
+    return () => {
+      mounted = false
+    }
+  }, [currentVote.id, isLogin])
+
+  React.useEffect(() => {
+    let mounted = true
+    async function loadOutcome() {
+      try {
+        const latest = await apiFetch<TopicOutcome | null>("/api/outcome/poll", {
+          params: { pollId: currentVote.id },
+        })
+        if (mounted) setOutcome(latest)
+      } catch {
+        if (mounted) setOutcome(vote.outcome || null)
+      }
+    }
+    void loadOutcome()
+    return () => {
+      mounted = false
+    }
+  }, [currentVote.id, vote.outcome])
+
+  const options = currentVote.options || []
+  const maxNum = Number(currentVote.voteNum) || options.length || 1
+  const canVote = Boolean(isLogin && !currentVote.expired && !submitting)
+  const canSeeResults = currentVote.canViewResults !== false
+
+  function toggleOption(optionId: number) {
+    if (!canVote) return
+    setCheckedIds((current) => {
+      if (current.includes(optionId)) {
+        return current.filter((id) => id !== optionId)
+      }
+      if (current.length >= maxNum) {
+        msgWarning(t("pages.topic.detail.vote.maxSelect", { num: maxNum }))
+        return current
+      }
+      return [...current, optionId]
+    })
+  }
+
+  async function submitStance() {
+    if (!isLogin) {
+      msgWarning(t("pages.topic.detail.vote.loginToVote"))
+      return
+    }
+    if (checkedIds.length === 0) {
+      msgWarning(t("pages.topic.detail.vote.selectAtLeastOne"))
+      return
+    }
+    if ((currentVote.stanceReasonRequired || 0) === 2 && !reason.trim()) {
+      msgWarning(t("pages.topic.detail.vote.reasonRequired"))
+      return
+    }
+    setSubmitting(true)
+    try {
+      const nextStance = await apiFetch<TopicStance>("/api/stance/create", {
+        method: "POST",
+        body: {
+          pollId: currentVote.id,
+          optionIds: checkedIds,
+          reason: reason.trim(),
+        },
+      })
+      setStance(nextStance)
+      const nextVote = await apiFetch<TopicVote>(`/api/vote/${currentVote.id}`)
+      setCurrentVote(nextVote)
+      setCheckedIds(nextVote.optionIds || [])
+      setOutcome(nextVote.outcome || null)
+      msgSuccess(t("pages.topic.detail.vote.submitSuccess"))
+    } catch (error) {
+      msgWarning(error instanceof Error ? error.message : String(error))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function revokeStance() {
+    if (!stance?.id) return
+    setSubmitting(true)
+    try {
+      await apiFetch<null>(`/api/stance/revoke/${stance.id}`, { method: "POST" })
+      setStance(null)
+      setReason("")
+      const nextVote = await apiFetch<TopicVote>(`/api/vote/${currentVote.id}`)
+      setCurrentVote(nextVote)
+      setCheckedIds(nextVote.optionIds || [])
+      setOutcome(nextVote.outcome || null)
+      msgSuccess(t("pages.topic.detail.vote.revokeSuccess"))
+    } catch (error) {
+      msgWarning(error instanceof Error ? error.message : String(error))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <section className={cn("rounded-lg bg-[#f6f9ff] px-5 py-6 text-[#16181f] dark:bg-card dark:text-card-foreground", className)}>
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-base leading-none font-medium">
+        <span className="rounded-sm bg-gradient-to-r from-[#5b48ff] to-[#9a45ff] px-1.5 py-0.5 text-xs text-white">
+          {t("pages.topic.detail.vote.proposalTag")}
+        </span>
+        <h2>{currentVote.title}</h2>
+      </div>
+      <div className="mb-4 text-sm text-muted-foreground">
+        {t("pages.topic.detail.vote.proposalMeta", { optionCount: options.length, voteNum: maxNum })}
+      </div>
+      <ul className="space-y-3">
+        {options.map((option) => (
+          <li key={option.id}>
+            <button
+              type="button"
+              disabled={!canVote}
+              className={cn(
+                "w-full rounded border px-3 py-3 text-left transition-colors",
+                checkedIds.includes(option.id)
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-background hover:border-primary/40"
+              )}
+              onClick={() => toggleOption(option.id)}
+            >
+              <div className="font-medium">{option.content}</div>
+              {option.meaning ? <div className="mt-1 text-xs text-muted-foreground">{option.meaning}</div> : null}
+              {option.prompt ? <div className="mt-1 text-xs text-muted-foreground">{option.prompt}</div> : null}
+              {canSeeResults ? (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  {t("pages.topic.detail.vote.proposalResultMeta", {
+                    voters: option.voterCount || option.voteCount || 0,
+                    score: option.totalScore || 0,
+                  })}
+                </div>
+              ) : null}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {(currentVote.stanceReasonRequired || 0) > 0 ? (
+        <div className="mt-4 space-y-2">
+          <div className="text-sm font-medium">
+            {t(
+              (currentVote.stanceReasonRequired || 0) === 2
+                ? "pages.topic.detail.vote.reasonRequiredLabel"
+                : "pages.topic.detail.vote.reasonOptionalLabel"
+            )}
+          </div>
+          <Input
+            value={reason}
+            placeholder={t("pages.topic.detail.vote.reasonPlaceholder")}
+            disabled={!canVote}
+            onChange={(event) => setReason(event.currentTarget.value)}
+          />
+        </div>
+      ) : null}
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <span>{t("pages.topic.detail.vote.participants", { count: currentVote.voteCount || 0 })}</span>
+        {currentVote.expired ? <span>{t("pages.topic.detail.vote.expired")}</span> : null}
+        {!canSeeResults ? <span>{t("pages.topic.detail.vote.resultsHidden")}</span> : null}
+      </div>
+      {outcome ? (
+        <div className="mt-4 rounded-md border bg-background p-3">
+          <div className="text-sm font-medium">{t("pages.topic.detail.vote.outcomeTitle")}</div>
+          <div className="mt-2 whitespace-pre-wrap text-sm">{outcome.statement}</div>
+          {outcome.pollOption?.content ? (
+            <div className="mt-2 text-xs text-muted-foreground">
+              {t("pages.topic.detail.vote.outcomeOption", {
+                option: outcome.pollOption.content,
+              })}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Button
+          className="bg-gradient-to-r from-[#5b48ff] to-[#9a45ff] text-white"
+          disabled={!canVote || checkedIds.length === 0}
+          onClick={() => void submitStance()}
+        >
+          {currentVote.voted
+            ? t("pages.topic.detail.vote.updateStance")
+            : t("pages.topic.detail.vote.submitStance")}
+        </Button>
+        {stance?.id ? (
+          <Button variant="outline" disabled={submitting} onClick={() => void revokeStance()}>
+            {t("pages.topic.detail.vote.revokeStance")}
+          </Button>
+        ) : null}
+      </div>
+    </section>
+  )
+}
+
 function VoteStatus({ vote, t }: { vote: TopicVote; t: ReturnType<typeof useI18n>["t"] }) {
   return (
-    <div className="mt-3 text-sm leading-none text-[#737782] dark:text-muted-foreground">
+    <div className="mt-4 text-xs text-[#737782] dark:text-muted-foreground">
       {t("pages.topic.detail.vote.participants", { count: vote.voteCount || 0 })}
       {vote.expired ? (
         <span className="ml-3">{t("pages.topic.detail.vote.expired")}</span>
@@ -251,6 +493,9 @@ function VoteStatus({ vote, t }: { vote: TopicVote; t: ReturnType<typeof useI18n
         <span className="ml-3">
           {t("pages.topic.detail.vote.expiredAt")}: {formatDate(vote.expiredAt)}
         </span>
+      ) : null}
+      {vote.voted && !isProposalVote(vote) ? (
+        <span className="ml-3">{t("pages.topic.detail.vote.selectedCount", { selected: vote.optionIds?.length || 0, max: vote.voteNum || 1 })}</span>
       ) : null}
     </div>
   )

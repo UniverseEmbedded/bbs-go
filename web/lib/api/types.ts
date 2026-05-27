@@ -99,11 +99,31 @@ export interface TopicVoteOption {
   voteCount?: number
   percent?: number
   voted?: boolean
+  meaning?: string
+  prompt?: string
+  totalScore?: number
+  voterCount?: number
+}
+
+export interface TopicOutcome {
+  id: number
+  pollId?: number
+  statement?: string
+  statementFormat?: string
+  authorId?: number
+  pollOptionId?: number | null
+  latest?: boolean
+  reviewOn?: number | null
+  createTime?: number
+  updateTime?: number
+  author?: UserSummary | null
+  pollOption?: TopicVoteOption | null
 }
 
 export interface TopicVote {
   id: number
   type?: 1 | 2 | "single" | "multiple" | string
+  pollType?: "poll" | "proposal" | string
   title?: string
   expiredAt?: number
   voteNum?: number
@@ -111,8 +131,36 @@ export interface TopicVote {
   voteCount?: number
   expired?: boolean
   voted?: boolean
+  canViewResults?: boolean
+  anonymous?: boolean
+  hideResults?: 0 | 1 | 2 | number
+  closedAt?: number | null
+  stanceReasonRequired?: 0 | 1 | 2 | number
   optionIds?: number[]
   options?: TopicVoteOption[]
+  outcome?: TopicOutcome | null
+}
+
+export interface TopicStanceChoice {
+  id: number
+  stanceId?: number
+  pollOptionId: number
+  score?: number
+}
+
+export interface TopicStance {
+  id: number
+  pollId: number
+  participantId?: number
+  participant?: UserSummary | null
+  reason?: string
+  reasonFormat?: string
+  latest?: boolean
+  castAt?: number | null
+  revokedAt?: number | null
+  noneOfTheAbove?: boolean
+  choices?: TopicStanceChoice[]
+  createTime?: number
 }
 
 export interface Topic {

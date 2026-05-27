@@ -24,6 +24,13 @@ function stripSpaRouteLoaders(): Plugin {
         .replace(/\bexport\s+(async\s+function\s+loader\b)/g, "$1")
         .replace(/\bexport\s+(function\s+loader\b)/g, "$1")
         .replace(/\bexport\s+(const\s+loader\s*=)/g, "$1")
+        .replace(
+          /^\s*export\s*\{\s*clientLoader\s*\}\s*from\s*["'][^"']+["'];?\s*$/gm,
+          ""
+        )
+        .replace(/\bexport\s+(async\s+function\s+clientLoader\b)/g, "$1")
+        .replace(/\bexport\s+(function\s+clientLoader\b)/g, "$1")
+        .replace(/\bexport\s+(const\s+clientLoader\s*=)/g, "$1")
 
       return nextCode === code ? null : { code: nextCode, map: null }
     },

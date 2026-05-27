@@ -34,40 +34,14 @@ type UserInfo struct {
 }
 
 // ExpProgressResponse 用户经验值进度（用于当前等级内的进度条展示）
-// 计算依据：LevelConfig 中 NeedExp 表示达到该等级所需的累计经验，严格递增。
-// 当前等级区间为 [当前级 NeedExp, 下一级 NeedExp)，进度 = 在此区间内已获得的经验占比。
 type ExpProgressResponse struct {
-	// CurrentExp 用户当前累计经验值（与 UserInfo.Exp 一致，便于组件只读进度）
-	// 计算方式：直接取 user.Exp。
-	CurrentExp int `json:"currentExp"`
-
-	// Level 当前等级（与 UserInfo.Level 一致）
-	// 计算方式：直接取 user.Level。
-	Level int `json:"level"`
-
-	// LevelTitle 当前等级称号（与 UserInfo.LevelTitle 一致）
-	// 计算方式：由 LevelConfig(level).Title 得到。
-	LevelTitle string `json:"levelTitle"`
-
-	// ExpInCurrentLevel 当前等级内已获得的经验数（用于文案展示，如「120 / 350」中的 120）
-	// 计算方式：当前累计经验 - 当前等级起始所需累计经验 = user.Exp - LevelConfig(level).NeedExp。
-	// 若 user.Exp < 当前级 NeedExp，取 0；若已超过下一级 NeedExp，取 expNeedForNextLevel（封顶）。
-	ExpInCurrentLevel int `json:"expInCurrentLevel"`
-
-	// ExpNeedForNextLevel 从当前等级升到下一级，在本等级段内需要的经验数（即区间长度，用于文案中的「/ 350」）
-	// 计算方式：下一级所需累计经验 - 当前级所需累计经验 = LevelConfig(level+1).NeedExp - LevelConfig(level).NeedExp。
-	// 若已是最高等级（无下一级配置），则为 0，前端可配合 isMaxLevel 显示「已满级」或 100%。
-	ExpNeedForNextLevel int `json:"expNeedForNextLevel"`
-
-	// ExpProgressPercent 当前等级内经验进度百分比，取值 0～100，供进度条直接使用
-	// 计算方式：round(ExpInCurrentLevel / ExpNeedForNextLevel * 100)。
-	// 当 ExpNeedForNextLevel 为 0（满级）时取 100；若分母为 0 且未满级则取 0。
-	ExpProgressPercent int `json:"expProgressPercent"`
-
-	// IsMaxLevel 是否已为最高等级（无下一级可升）
-	// 计算方式：不存在 LevelConfig(level+1) 或为配置中的最高级时为 true。
-	// 为 true 时前端可显示 100% 或「已满级」。
-	IsMaxLevel bool `json:"isMaxLevel"`
+	CurrentExp          int    `json:"currentExp"`
+	Level               int    `json:"level"`
+	LevelTitle          string `json:"levelTitle"`
+	ExpInCurrentLevel   int    `json:"expInCurrentLevel"`
+	ExpNeedForNextLevel int    `json:"expNeedForNextLevel"`
+	ExpProgressPercent  int    `json:"expProgressPercent"`
+	IsMaxLevel          bool   `json:"isMaxLevel"`
 }
 
 // UserDetail 用户详细信息
@@ -128,7 +102,7 @@ type CategoryResponse struct {
 	Children    []CategoryResponse     `json:"children,omitempty"` // 子节点（发帖可选时用）
 }
 
-// CategoryTreeItem 后台节点树形列表项（含 sortNo/status/createTime，children 始终存在以兼容 Arco Table）
+// CategoryTreeItem 后台节点树形列表项
 type CategoryTreeItem struct {
 	Id          int64                  `json:"id"`
 	ParentId    int64                  `json:"parentId"`
@@ -139,7 +113,7 @@ type CategoryTreeItem struct {
 	SortNo      int                    `json:"sortNo"`
 	Status      int                    `json:"status"`
 	CreateTime  int64                  `json:"createTime"`
-	Children    []CategoryTreeItem     `json:"children"` // 子节点，叶子节点为 []，保证 Arco Table 树形展示
+	Children    []CategoryTreeItem     `json:"children"`
 }
 
 type SearchTopicResponse struct {
@@ -208,40 +182,86 @@ type TopicResponse struct {
 	Attachments       []AttachmentResponse `json:"attachments,omitempty"`
 }
 
-// AttachmentResponse 附件返回（不包含直链）
 type AttachmentResponse struct {
-	Id            string `json:"id"`            // ID
-	FileName      string `json:"fileName"`      // 原始文件名
-	FileSize      int64  `json:"fileSize"`      // 文件大小（字节）
-	DownloadScore int    `json:"downloadScore"` // 下载所需积分
-	DownloadCount int    `json:"downloadCount"` // 下载次数
-	Downloaded    bool   `json:"downloaded"`    // 当前用户是否已购买（可免费下载）
+	Id            string `json:"id"`
+	FileName      string `json:"fileName"`
+	FileSize      int64  `json:"fileSize"`
+	DownloadScore int    `json:"downloadScore"`
+	DownloadCount int    `json:"downloadCount"`
+	Downloaded    bool   `json:"downloaded"`
 }
 
 type VoteResponse struct {
-	Id          int64                `json:"id"`
-	Type        constants.VoteType   `json:"type"`
-	Title       string               `json:"title"`
-	ExpiredAt   int64                `json:"expiredAt"`
-	VoteNum     int                  `json:"voteNum"`
-	OptionCount int                  `json:"optionCount"`
-	VoteCount   int                  `json:"voteCount"`
-	Expired     bool                 `json:"expired"`
-	Voted       bool                 `json:"voted"`
-	OptionIds   []int64              `json:"optionIds"`
-	Options     []VoteOptionResponse `json:"options"`
+	Id                   int64                          `json:"id"`
+	Type                 constants.VoteType             `json:"type"`
+	PollType             constants.PollType             `json:"pollType"`
+	Title                string                         `json:"title"`
+	ExpiredAt            int64                          `json:"expiredAt"`
+	VoteNum              int                            `json:"voteNum"`
+	OptionCount          int                            `json:"optionCount"`
+	VoteCount            int                            `json:"voteCount"`
+	Expired              bool                           `json:"expired"`
+	Voted                bool                           `json:"voted"`
+	CanViewResults       bool                           `json:"canViewResults"`
+	Anonymous            bool                           `json:"anonymous"`
+	HideResults          constants.HideResultsType      `json:"hideResults"`
+	ClosedAt             *int64                         `json:"closedAt"`
+	StanceReasonRequired constants.StanceReasonRequired `json:"stanceReasonRequired"`
+	OptionIds            []int64                        `json:"optionIds"`
+	Options              []VoteOptionResponse           `json:"options"`
+	Outcome              *OutcomeResponse               `json:"outcome,omitempty"`
 }
 
 type VoteOptionResponse struct {
-	Id        int64   `json:"id"`
-	Content   string  `json:"content"`
-	SortNo    int     `json:"sortNo"`
-	VoteCount int     `json:"voteCount"`
-	Percent   float64 `json:"percent"`
-	Voted     bool    `json:"voted"`
+	Id         int64   `json:"id"`
+	Content    string  `json:"content"`
+	SortNo     int     `json:"sortNo"`
+	VoteCount  int     `json:"voteCount"`
+	Percent    float64 `json:"percent"`
+	Voted      bool    `json:"voted"`
+	Meaning    string  `json:"meaning,omitempty"`
+	Prompt     string  `json:"prompt,omitempty"`
+	TotalScore int     `json:"totalScore,omitempty"`
+	VoterCount int     `json:"voterCount,omitempty"`
 }
 
-// CommentResponse 评论返回数据
+type StanceResponse struct {
+	Id             int64                  `json:"id"`
+	PollId         int64                  `json:"pollId"`
+	ParticipantId  int64                  `json:"participantId"`
+	Participant    *UserInfo              `json:"participant,omitempty"`
+	Reason         string                 `json:"reason"`
+	ReasonFormat   string                 `json:"reasonFormat"`
+	Latest         bool                   `json:"latest"`
+	CastAt         *int64                 `json:"castAt"`
+	RevokedAt      *int64                 `json:"revokedAt"`
+	NoneOfTheAbove bool                   `json:"noneOfTheAbove"`
+	Choices        []StanceChoiceResponse `json:"choices,omitempty"`
+	CreateTime     int64                  `json:"createTime"`
+}
+
+type StanceChoiceResponse struct {
+	Id           int64 `json:"id"`
+	StanceId     int64 `json:"stanceId"`
+	PollOptionId int64 `json:"pollOptionId"`
+	Score        int   `json:"score"`
+}
+
+type OutcomeResponse struct {
+	Id              int64               `json:"id"`
+	PollId          int64               `json:"pollId"`
+	Statement       string              `json:"statement"`
+	StatementFormat string              `json:"statementFormat"`
+	AuthorId        int64               `json:"authorId"`
+	Author          *UserInfo           `json:"author,omitempty"`
+	PollOptionId    *int64              `json:"pollOptionId"`
+	PollOption      *VoteOptionResponse `json:"pollOption,omitempty"`
+	Latest          bool                `json:"latest"`
+	ReviewOn        *int64              `json:"reviewOn"`
+	CreateTime      int64               `json:"createTime"`
+	UpdateTime      int64               `json:"updateTime"`
+}
+
 type CommentResponse struct {
 	Id           int64                 `json:"id"`
 	User         *UserInfo             `json:"user"`
@@ -261,7 +281,6 @@ type CommentResponse struct {
 	CreateTime   int64                 `json:"createTime"`
 }
 
-// 收藏返回数据
 type FavoriteResponse struct {
 	Id         int64     `json:"id"`
 	EntityType string    `json:"entityType"`
@@ -274,22 +293,20 @@ type FavoriteResponse struct {
 	CreateTime int64     `json:"createTime"`
 }
 
-// 消息
 type MessageResponse struct {
 	Id           int64     `json:"id"`
-	From         *UserInfo `json:"from"`    // 消息发送人
-	UserId       int64     `json:"userId"`  // 消息接收人编号
-	Title        string    `json:"title"`   // 标题
-	Content      string    `json:"content"` // 消息内容
+	From         *UserInfo `json:"from"`
+	UserId       int64     `json:"userId"`
+	Title        string    `json:"title"`
+	Content      string    `json:"content"`
 	QuoteContent string    `json:"quoteContent"`
 	Type         int       `json:"type"`
-	DetailUrl    string    `json:"detailUrl"` // 消息详情url
+	DetailUrl    string    `json:"detailUrl"`
 	ExtraData    string    `json:"extraData"`
 	Status       int       `json:"status"`
 	CreateTime   int64     `json:"createTime"`
 }
 
-// 图片
 type ImageInfo struct {
 	Url     string `json:"url"`
 	Preview string `json:"preview"`
@@ -326,14 +343,14 @@ type MenuTreeResponse struct {
 type DictResponse struct {
 	Id         int64  `json:"id"`
 	TypeId     int64  `json:"typeId"`
-	ParentId   *int64 `json:"parentId"`   // 上级分类
-	Name       string `json:"name"`       // 名称
-	Label      string `json:"label"`      // 标题
-	Value      string `json:"value"`      // 值
-	SortNo     int    `json:"sortNo"`     // 排序
-	Status     int    `json:"status"`     // 状态
-	CreateTime int64  `json:"createTime"` // 创建时间
-	UpdateTime int64  `json:"updateTime"` // 更新时间
+	ParentId   *int64 `json:"parentId"`
+	Name       string `json:"name"`
+	Label      string `json:"label"`
+	Value      string `json:"value"`
+	SortNo     int    `json:"sortNo"`
+	Status     int    `json:"status"`
+	CreateTime int64  `json:"createTime"`
+	UpdateTime int64  `json:"updateTime"`
 }
 
 type DictListResponse struct {
@@ -341,7 +358,6 @@ type DictListResponse struct {
 	Children []DictListResponse `json:"children"`
 }
 
-// TaskGroupInfo 任务分组信息（含多语言名称）
 type TaskGroupInfo struct {
 	Key  constants.TaskGroup `json:"key"`
 	Name string              `json:"name"`
@@ -368,13 +384,12 @@ type TaskResponse struct {
 	UserProgress   *TaskProgressResponse `json:"userProgress,omitempty"`
 }
 
-// TaskProgressResponse 用户在某任务上的当前进度
 type TaskProgressResponse struct {
-	PeriodKey      int `json:"periodKey"`      // 当前周期 key（一次性为 0）
-	EventProgress  int `json:"eventProgress"`  // 本周期已累计的事件次数
-	EventTarget    int `json:"eventTarget"`    // 完成一次任务需要的事件次数
-	FinishedCount  int `json:"finishedCount"`  // 本周期已完成次数
-	MaxFinishCount int `json:"maxFinishCount"` // 本周期最多可完成次数
+	PeriodKey      int `json:"periodKey"`
+	EventProgress  int `json:"eventProgress"`
+	EventTarget    int `json:"eventTarget"`
+	FinishedCount  int `json:"finishedCount"`
+	MaxFinishCount int `json:"maxFinishCount"`
 }
 
 type BadgeResponse struct {
@@ -385,7 +400,24 @@ type BadgeResponse struct {
 	Icon        string `json:"icon"`
 	SortNo      int    `json:"sortNo"`
 	Status      int    `json:"status"`
-	Owned       bool   `json:"owned"`      // 当前登录用户是否已获得
-	Worn        bool   `json:"worn"`       // 是否已佩戴
-	ObtainTime  int64  `json:"obtainTime"` // 获得时间（未获得为0）
+	Owned       bool   `json:"owned"`
+	Worn        bool   `json:"worn"`
+	ObtainTime  int64  `json:"obtainTime"`
+}
+
+type CheckInResponse struct {
+	Id              int64     `json:"id"`
+	UserId          int64     `json:"userId"`
+	LatestDayName   int       `json:"latestDayName"`
+	ConsecutiveDays int       `json:"consecutiveDays"`
+	CheckIn         bool      `json:"checkIn"`
+	UpdateTime      int64     `json:"updateTime"`
+	User            *UserInfo `json:"user,omitempty"`
+}
+
+type SiteNavResponse struct {
+	Title           string            `json:"title"`
+	Url             string            `json:"url"`
+	OpenInNewWindow bool              `json:"openInNewWindow"`
+	Children        []SiteNavResponse `json:"children,omitempty"`
 }

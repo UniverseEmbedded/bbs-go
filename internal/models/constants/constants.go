@@ -213,6 +213,29 @@ const (
 	VoteTypeMultiple VoteType = 2 // 多选
 )
 
+type PollType string
+
+const (
+	PollTypePoll     PollType = "poll"
+	PollTypeProposal PollType = "proposal"
+)
+
+type HideResultsType int
+
+const (
+	HideResultsOff         HideResultsType = 0 // 始终可见
+	HideResultsUntilVote   HideResultsType = 1 // 投票后或关闭后可见
+	HideResultsUntilClosed HideResultsType = 2 // 关闭后可见
+)
+
+type StanceReasonRequired int
+
+const (
+	StanceReasonDisabled StanceReasonRequired = 0 // 禁用
+	StanceReasonOptional StanceReasonRequired = 1 // 可选
+	StanceReasonMust     StanceReasonRequired = 2 // 必填
+)
+
 type ThirdType string
 
 const (

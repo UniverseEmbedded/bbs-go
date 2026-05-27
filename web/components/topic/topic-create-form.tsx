@@ -60,10 +60,14 @@ type TopicCreateFormState = {
 
 type TopicVoteForm = {
   type: 1 | 2
+  pollType: "poll" | "proposal"
   title: string
   expiredAt: number
   voteNum: number
-  options: Array<{ content: string }>
+  hideResults: 0 | 1 | 2
+  anonymous: boolean
+  stanceReasonRequired: 0 | 1 | 2
+  options: Array<{ content: string; meaning?: string; prompt?: string }>
 }
 
 const DEFAULT_ATTACHMENT_ACCEPT =
@@ -463,9 +467,13 @@ function SimpleTopicEditor({
 function defaultVote(): TopicVoteForm {
   return {
     type: 1,
+    pollType: "poll",
     title: "",
     expiredAt: Date.now() + 24 * 60 * 60 * 1000,
     voteNum: 1,
+    hideResults: 0,
+    anonymous: false,
+    stanceReasonRequired: 0,
     options: [{ content: "" }, { content: "" }],
   }
 }
@@ -473,12 +481,20 @@ function defaultVote(): TopicVoteForm {
 function cloneVote(vote: TopicVoteForm): TopicVoteForm {
   return {
     type: vote.type === 2 ? 2 : 1,
+    pollType: vote.pollType === "proposal" ? "proposal" : "poll",
     title: vote.title || "",
     expiredAt: vote.expiredAt || Date.now() + 24 * 60 * 60 * 1000,
     voteNum: Number(vote.voteNum) || (vote.type === 2 ? 2 : 1),
+    hideResults: vote.hideResults ?? 0,
+    anonymous: Boolean(vote.anonymous),
+    stanceReasonRequired: vote.stanceReasonRequired ?? 0,
     options:
       vote.options && vote.options.length >= 2
-        ? vote.options.map((option) => ({ content: option.content || "" }))
+        ? vote.options.map((option) => ({
+            content: option.content || "",
+            meaning: option.meaning || "",
+            prompt: option.prompt || "",
+          }))
         : [{ content: "" }, { content: "" }],
   }
 }
@@ -492,6 +508,7 @@ function VoteEditor({
 }) {
   const { t } = useI18n()
   const dateValue = new Date(vote.expiredAt).toISOString().slice(0, 16)
+  const isProposal = vote.pollType === "proposal"
 
   return (
     <div className="mt-2 space-y-3 rounded-md border bg-background p-3">
@@ -502,45 +519,114 @@ function VoteEditor({
           onChange({ ...vote, title: event.currentTarget.value })
         }
       />
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          type="button"
+          size="sm"
+          variant={!isProposal ? "default" : "outline"}
+          onClick={() =>
+            onChange({
+              ...vote,
+              pollType: "poll",
+              type: vote.type === 2 ? 2 : 1,
+              voteNum: vote.type === 2 ? Math.max(2, vote.voteNum) : 1,
+              hideResults: 0,
+              anonymous: false,
+              stanceReasonRequired: 0,
+            })
+          }
+        >
+          {t("pages.topic.create.vote.modePoll")}
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={isProposal ? "default" : "outline"}
+          onClick={() =>
+            onChange({
+              ...vote,
+              pollType: "proposal",
+              type: 2,
+              voteNum: Math.max(vote.options.length, vote.voteNum || vote.options.length),
+            })
+          }
+        >
+          {t("pages.topic.create.vote.modeProposal")}
+        </Button>
+      </div>
       <div className="space-y-2">
         {vote.options.map((option, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <span className="w-5 text-xs text-muted-foreground">
-              {index + 1}.
-            </span>
-            <Input
-              value={option.content}
-              placeholder={t("pages.topic.create.vote.optionPlaceholder", {
-                index: index + 1,
-              })}
-              onChange={(event) =>
-                onChange({
-                  ...vote,
-                  options: vote.options.map((item, itemIndex) =>
-                    itemIndex === index
-                      ? { content: event.currentTarget.value }
-                      : item
-                  ),
-                })
-              }
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon-sm"
-              disabled={vote.options.length <= 2}
-              onClick={() =>
-                onChange({
-                  ...vote,
-                  options: vote.options.filter(
-                    (_, itemIndex) => itemIndex !== index
-                  ),
-                  voteNum: Math.min(vote.voteNum, vote.options.length - 1),
-                })
-              }
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          <div key={index} className="space-y-2 rounded-md border p-2">
+            <div className="flex items-center gap-2">
+              <span className="w-5 text-xs text-muted-foreground">
+                {index + 1}.
+              </span>
+              <Input
+                value={option.content}
+                placeholder={t("pages.topic.create.vote.optionPlaceholder", {
+                  index: index + 1,
+                })}
+                onChange={(event) =>
+                  onChange({
+                    ...vote,
+                    options: vote.options.map((item, itemIndex) =>
+                      itemIndex === index
+                        ? { ...item, content: event.currentTarget.value }
+                        : item
+                    ),
+                  })
+                }
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon-sm"
+                disabled={vote.options.length <= 2}
+                onClick={() =>
+                  onChange({
+                    ...vote,
+                    options: vote.options.filter(
+                      (_, itemIndex) => itemIndex !== index
+                    ),
+                    voteNum: Math.min(vote.voteNum, vote.options.length - 1),
+                  })
+                }
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            {isProposal ? (
+              <>
+                <Input
+                  value={option.meaning || ""}
+                  placeholder={t("pages.topic.create.vote.meaningPlaceholder")}
+                  onChange={(event) =>
+                    onChange({
+                      ...vote,
+                      options: vote.options.map((item, itemIndex) =>
+                        itemIndex === index
+                          ? { ...item, meaning: event.currentTarget.value }
+                          : item
+                      ),
+                    })
+                  }
+                />
+                <Input
+                  value={option.prompt || ""}
+                  placeholder={t("pages.topic.create.vote.promptPlaceholder")}
+                  onChange={(event) =>
+                    onChange({
+                      ...vote,
+                      options: vote.options.map((item, itemIndex) =>
+                        itemIndex === index
+                          ? { ...item, prompt: event.currentTarget.value }
+                          : item
+                      ),
+                    })
+                  }
+                />
+              </>
+            ) : null}
           </div>
         ))}
       </div>
@@ -556,46 +642,100 @@ function VoteEditor({
         <Plus className="h-4 w-4" />
         {t("pages.topic.create.vote.addOption")}
       </Button>
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant={vote.type === 1 ? "default" : "outline"}
-          onClick={() => onChange({ ...vote, type: 1, voteNum: 1 })}
-        >
-          {t("pages.topic.create.vote.single")}
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={vote.type === 2 ? "default" : "outline"}
-          onClick={() =>
-            onChange({ ...vote, type: 2, voteNum: Math.max(2, vote.voteNum) })
-          }
-        >
-          {t("pages.topic.create.vote.multipleShort")}
-        </Button>
-        {vote.type === 2 ? (
-          <>
-            <span className="text-xs text-muted-foreground">
-              {t("pages.topic.create.vote.voteNum")}
-            </span>
-            <Input
-              type="number"
-              min="1"
-              max={vote.options.length}
-              className="h-8 w-20"
-              value={vote.voteNum}
+      {!isProposal ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={vote.type === 1 ? "default" : "outline"}
+            onClick={() => onChange({ ...vote, type: 1, voteNum: 1 })}
+          >
+            {t("pages.topic.create.vote.single")}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={vote.type === 2 ? "default" : "outline"}
+            onClick={() =>
+              onChange({ ...vote, type: 2, voteNum: Math.max(2, vote.voteNum) })
+            }
+          >
+            {t("pages.topic.create.vote.multipleShort")}
+          </Button>
+          {vote.type === 2 ? (
+            <>
+              <span className="text-xs text-muted-foreground">
+                {t("pages.topic.create.vote.voteNum")}
+              </span>
+              <Input
+                type="number"
+                min="1"
+                max={vote.options.length}
+                className="h-8 w-20"
+                value={vote.voteNum}
+                onChange={(event) =>
+                  onChange({
+                    ...vote,
+                    voteNum: Number(event.currentTarget.value) || 1,
+                  })
+                }
+              />
+            </>
+          ) : null}
+        </div>
+      ) : (
+        <div className="space-y-3 rounded-md border bg-muted/20 p-3">
+          <div className="text-xs font-medium text-muted-foreground">
+            {t("pages.topic.create.vote.proposalSettings")}
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="space-y-1 text-xs text-muted-foreground">
+              <span>{t("pages.topic.create.vote.hideResults")}</span>
+              <select
+                className="h-9 w-full rounded-md border bg-background px-3 text-sm"
+                value={vote.hideResults}
+                onChange={(event) =>
+                  onChange({
+                    ...vote,
+                    hideResults: Number(event.currentTarget.value) as 0 | 1 | 2,
+                  })
+                }
+              >
+                <option value={0}>{t("pages.topic.create.vote.hideResultsOff")}</option>
+                <option value={1}>{t("pages.topic.create.vote.hideResultsUntilVote")}</option>
+                <option value={2}>{t("pages.topic.create.vote.hideResultsUntilClosed")}</option>
+              </select>
+            </label>
+            <label className="space-y-1 text-xs text-muted-foreground">
+              <span>{t("pages.topic.create.vote.reasonMode")}</span>
+              <select
+                className="h-9 w-full rounded-md border bg-background px-3 text-sm"
+                value={vote.stanceReasonRequired}
+                onChange={(event) =>
+                  onChange({
+                    ...vote,
+                    stanceReasonRequired: Number(event.currentTarget.value) as 0 | 1 | 2,
+                  })
+                }
+              >
+                <option value={0}>{t("pages.topic.create.vote.reasonDisabled")}</option>
+                <option value={1}>{t("pages.topic.create.vote.reasonOptional")}</option>
+                <option value={2}>{t("pages.topic.create.vote.reasonRequired")}</option>
+              </select>
+            </label>
+          </div>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={vote.anonymous}
               onChange={(event) =>
-                onChange({
-                  ...vote,
-                  voteNum: Number(event.currentTarget.value) || 1,
-                })
+                onChange({ ...vote, anonymous: event.currentTarget.checked })
               }
             />
-          </>
-        ) : null}
-      </div>
+            <span>{t("pages.topic.create.vote.anonymous")}</span>
+          </label>
+        </div>
+      )}
       <Input
         type="datetime-local"
         value={dateValue}
@@ -685,6 +825,13 @@ function validateVote(
   ) {
     msgWarning(t("pages.topic.create.vote.validateOptionDuplicate"))
     return false
+  }
+  if (vote.pollType === "proposal") {
+    if (vote.stanceReasonRequired < 0 || vote.stanceReasonRequired > 2) {
+      msgWarning(t("pages.topic.create.vote.validateReasonMode"))
+      return false
+    }
+    return true
   }
   if (vote.type === 2 && (vote.voteNum <= 0 || vote.voteNum > options.length)) {
     msgWarning(t("pages.topic.create.vote.validateVoteNum"))
@@ -822,9 +969,16 @@ export function TopicCreateForm({
           vote: form.vote
             ? {
                 ...form.vote,
-                voteNum: form.vote.type === 1 ? 1 : form.vote.voteNum,
+                voteNum:
+                  form.vote.pollType === "proposal"
+                    ? form.vote.options.length
+                    : form.vote.type === 1
+                      ? 1
+                      : form.vote.voteNum,
                 options: form.vote.options.map((option) => ({
                   content: option.content.trim(),
+                  meaning: option.meaning?.trim() || "",
+                  prompt: option.prompt?.trim() || "",
                 })),
               }
             : null,
@@ -862,10 +1016,17 @@ export function TopicCreateForm({
     updateForm({
       vote: {
         ...voteDraft,
-        type: voteDraft.type === 2 ? 2 : 1,
-        voteNum: voteDraft.type === 1 ? 1 : voteDraft.voteNum,
+        type: voteDraft.pollType === "proposal" ? 2 : voteDraft.type === 2 ? 2 : 1,
+        voteNum:
+          voteDraft.pollType === "proposal"
+            ? voteDraft.options.length
+            : voteDraft.type === 1
+              ? 1
+              : voteDraft.voteNum,
         options: voteDraft.options.map((option) => ({
           content: option.content.trim(),
+          meaning: option.meaning?.trim() || "",
+          prompt: option.prompt?.trim() || "",
         })),
       },
     })
@@ -1084,11 +1245,13 @@ export function TopicCreateForm({
               <div className="mt-2 rounded-md border bg-background px-2 py-2 text-xs text-muted-foreground">
                 <div>{form.vote.title}</div>
                 <div className="mt-1">
-                  {form.vote.type === 1
-                    ? t("pages.topic.create.vote.single")
-                    : t("pages.topic.create.vote.multiple", {
-                        num: form.vote.voteNum,
-                      })}
+                  {form.vote.pollType === "proposal"
+                    ? t("pages.topic.create.vote.modeProposal")
+                    : form.vote.type === 1
+                      ? t("pages.topic.create.vote.single")
+                      : t("pages.topic.create.vote.multiple", {
+                          num: form.vote.voteNum,
+                        })}
                   {" · "}
                   {form.vote.options.length}{" "}
                   {t("pages.topic.create.vote.optionsCount")}

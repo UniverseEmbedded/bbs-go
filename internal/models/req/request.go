@@ -22,8 +22,8 @@ type CreateTopicReq struct {
 	Tags          []string              `json:"tags" form:"tags"`
 	ImageList     []ImageDTO            `json:"imageList" form:"imageList"`
 	Vote          *VoteDTO              `json:"vote" form:"vote"`
-	BountyScore   int                   `json:"bountyScore" form:"bountyScore"`     // 悬赏积分（仅问答帖有效，0 表示无悬赏）
-	AttachmentIds []string              `json:"attachmentIds" form:"attachmentIds"` // 附件 ID 列表（UUID），发帖时绑定到帖子
+	BountyScore   int                   `json:"bountyScore" form:"bountyScore"`
+	AttachmentIds []string              `json:"attachmentIds" form:"attachmentIds"`
 	UserAgent     string                `json:"userAgent" form:"userAgent"`
 	Ip            string                `json:"ip" form:"ip"`
 
@@ -33,20 +33,43 @@ type CreateTopicReq struct {
 }
 
 type VoteDTO struct {
-	Type      constants.VoteType `json:"type" form:"type"`
-	Title     string             `json:"title" form:"title"`
-	ExpiredAt int64              `json:"expiredAt" form:"expiredAt"`
-	VoteNum   int                `json:"voteNum" form:"voteNum"`
-	Options   []VoteOptionDTO    `json:"options" form:"options"`
+	Type                 constants.VoteType             `json:"type" form:"type"`
+	PollType             constants.PollType             `json:"pollType" form:"pollType"`
+	Title                string                         `json:"title" form:"title"`
+	ExpiredAt            int64                          `json:"expiredAt" form:"expiredAt"`
+	VoteNum              int                            `json:"voteNum" form:"voteNum"`
+	HideResults          constants.HideResultsType      `json:"hideResults" form:"hideResults"`
+	Anonymous            bool                           `json:"anonymous" form:"anonymous"`
+	StanceReasonRequired constants.StanceReasonRequired `json:"stanceReasonRequired" form:"stanceReasonRequired"`
+	Options              []VoteOptionDTO                `json:"options" form:"options"`
 }
 
 type VoteOptionDTO struct {
 	Content string `json:"content" form:"content"`
+	Meaning string `json:"meaning" form:"meaning"`
+	Prompt  string `json:"prompt" form:"prompt"`
 }
 
 type VoteCastReq struct {
 	VoteId    int64   `json:"voteId" form:"voteId"`
 	OptionIds []int64 `json:"optionIds" form:"optionIds"`
+}
+
+type StanceCreateReq struct {
+	PollId         int64         `json:"pollId" form:"pollId"`
+	OptionIds      []int64       `json:"optionIds" form:"optionIds"`
+	OptionScores   map[int64]int `json:"optionScores" form:"optionScores"`
+	Reason         string        `json:"reason" form:"reason"`
+	NoneOfTheAbove bool          `json:"noneOfTheAbove" form:"noneOfTheAbove"`
+}
+
+type OutcomeCreateReq struct {
+	PollId          int64  `json:"pollId" form:"pollId"`
+	Statement       string `json:"statement" form:"statement"`
+	StatementFormat string `json:"statementFormat" form:"statementFormat"`
+	PollOptionId    *int64 `json:"pollOptionId" form:"pollOptionId"`
+	ReviewOn        *int64 `json:"reviewOn" form:"reviewOn"`
+	CustomFields    string `json:"customFields" form:"customFields"`
 }
 
 type EditTopicReq struct {
@@ -55,7 +78,7 @@ type EditTopicReq struct {
 	Content       string   `json:"content" form:"content"`
 	HideContent   string   `json:"hideContent" form:"hideContent"`
 	Tags          []string `json:"tags" form:"tags"`
-	AttachmentIds []string `json:"attachmentIds" form:"attachmentIds"` // 附件 ID 列表（UUID），全量替换
+	AttachmentIds []string `json:"attachmentIds" form:"attachmentIds"`
 }
 
 type CreateArticleReq struct {
@@ -79,9 +102,7 @@ func ParseImageList(imageListStr string) []ImageDTO {
 		if ret.IsArray() {
 			for _, item := range ret.Array() {
 				url := item.Get("url").String()
-				imageList = append(imageList, ImageDTO{
-					Url: url,
-				})
+				imageList = append(imageList, ImageDTO{Url: url})
 			}
 		}
 	}
